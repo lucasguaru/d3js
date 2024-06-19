@@ -6,3 +6,7 @@ function log(value, text) {
     }
     return value;
 }
+
+export default log
+
+// module.exports = { log }
