@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawio generator</title>
+    <script src="js/file/fileIsoCustomerScoreCardData.js"></script>
+    <script src="js/file/fileIsoOSSData.js"></script>
+
+    <script src="js/api/purchaseOrderApi.js"></script>
+    <script src="js/createFile.js"></script>
+    <script src="js/createApi.js"></script>
+    <script src="js/app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .button {
+            padding: 15px 25px;
+            margin: 10px;
+            font-size: 16px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button1 {
+            background-color: #008CBA;
+        }
+
+        .button1:hover {
+            background-color: #007bb5;
+        }
+
+        .button2 {
+            background-color: #4CAF50;
+        }
+
+        .button2:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="button button1" onclick="copyFileIsoCustomerScoreCardData()">Copy File Iso Customer ScoreCard
+        Data</button>
+    <button class="button button1" onclick="copyFileIsoOSSData()">Copy File Iso OSS Data</button>
+    <button class="button button2" onclick="copyApiPurchaseOrder()">Copy Purchase Order Api</button>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function () {
+                alert('Copied to clipboard: ' + text);
+            }, function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function copyFileIsoCustomerScoreCardData() {
+            copyToClipboard(createFile('ISO - Customer Scorecard Data', fileIsoCustomerScoreCardData))
+        }
+
+        function copyFileIsoOSSData() {
+            copyToClipboard(createFile('ISO - OSS Data', fileIsoOSSData))
+        }
+
+        function copyApiPurchaseOrder() {
+            copyToClipboard(createApi('PurchaseOrder', purchaseOrderApi))
+        }
+
+    </script>
+</body>
+
+</html>
