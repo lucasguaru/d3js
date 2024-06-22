@@ -18,9 +18,13 @@ function createField(apiName, items, x, parentName = "") {
     const createMxCell = (id, field) => {
         const fieldScaped = scapeValue(parentName + field.fieldName)
         const descScaped = scapeValue(field.description)
+        let style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;"'
+        // if (style) {
+        //     style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=70;"'
+        // }
         return `
-        <UserObject label="${fieldScaped}" tooltip="${descScaped}" id="${id}">
-            <mxCell style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+        <UserObject label="${fieldScaped}" tooltip="${descScaped}" tags="Api${apiName}" id="${id}">
+            <mxCell ${style} vertex="1" parent="1">
                 <mxGeometry x="${x}" y="${yStart}" width="180" height="20" as="geometry"/>
             </mxCell>
         </UserObject>`;
@@ -72,9 +76,11 @@ function createAllApis(items) {
     const createMxGraphModel = (id, apiName, fieldResult, x, y) => {
         apiName = scapeValue(apiName).replace("PostRequestBody", "")
         return `
-        <mxCell id="${id}" value="${apiName}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-            <mxGeometry x="${x}" y="${y}" width="200" height="40" as="geometry"/>
-        </mxCell>${fieldResult}`
+        <UserObject label="${apiName}" link="data:action/json,{&quot;actions&quot;:[{&quot;toggle&quot;:{&quot;tags&quot;:[&quot;Api${apiName}&quot;]}}]}" id="${id}">
+            <mxCell style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                <mxGeometry x="${x}" y="${y}" width="200" height="40" as="geometry"/>
+            </mxCell>
+        </UserObject>${fieldResult}`
     };
 
     // Adding sort order to have the connection lines behind the other objects
