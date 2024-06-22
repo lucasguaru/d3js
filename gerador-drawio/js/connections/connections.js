@@ -25,5 +25,10 @@ const connectionsData = [
     { "from": { "name": "Plant City", "id": 26 }, "to": { "fieldName": "domicile_city", "id": 1005, "parent": "Consignee" } },
     { "from": { "name": "Plant Region", "id": 27 }, "to": { "fieldName": "domicile_principle_subdivision", "id": 1006, "parent": "Consignee" } },
     { "from": { "name": "Plant Postal Code", "id": 28 }, "to": { "fieldName": "domicile_postal_code", "id": 1008, "parent": "Consignee" } },
-    { "from": { "name": "Shipping Point", "id": 29 }, "to": { "fieldName": "shipping_point", "id": 5076, "parent": "Shipment" } }
+    { "from": { "name": "Shipping Point", "id": 29 }, "to": { "fieldName": "shipping_point", "id": 5076, "parent": "Shipment" } },
+    { "from": { "name": "Shipping Point Name", "id": 30 }, "to": { "fieldName": "name", "id": 2002, "parent": "Facility" } },
+    { "from": { "name": "Shipping Point Street", "id": 31 }, "to": { "fieldName": "raw_address", "id": 2005, "parent": "Facility" } },
+    { "from": { "name": "Shipping Point City", "id": 32 }, "to": { "fieldName": "domicile_city", "id": 1005, "parent": "Consignee" } },
+    { "from": { "name": "Shipping Point Region", "id": 33 }, "to": { "fieldName": "domicile_principle_subdivision", "id": 1006, "parent": "Consignee" } },
+    { "from": { "name": "Shipping Point Postal Code", "id": 34 }, "to": { "fieldName": "domicile_postal_code", "id": 1008, "parent": "Consignee" } }
 ]

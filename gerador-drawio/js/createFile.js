@@ -7,19 +7,16 @@ function createFile(filename, items) {
     
     const createMxCell = (index, y) => {
         const fieldScaped = scapeValue(index.name)
+        let style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;"'
+        if (connectionsData.find(conn => conn.from.id == index.id)) {
+            style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=70;"'
+        }
         return `
         <UserObject label="${fieldScaped}" id="${index.id}">
-            <mxCell style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
+            <mxCell ${style} vertex="1" parent="1">
                 <mxGeometry x="100" y="${y}" width="160" height="20" as="geometry"/>
             </mxCell>
         </UserObject>`;
-
-        // return `
-        // <UserObject label="${fieldScaped}" tooltip="${fieldScaped}" id="${index.id}">
-        //     <mxCell style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="1">
-        //         <mxGeometry x="90" y="${y}" width="160" height="20" as="geometry"/>
-        //     </mxCell>
-        // </UserObject>`;
     };
     
     let result = "";
