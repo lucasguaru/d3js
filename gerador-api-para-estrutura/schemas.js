@@ -1,3399 +1,3398 @@
 const schemas = {
-    "UUID": {
-      "type": "string",
-      "description": "Represents a Universally Unique Identifier ([UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)).",
-      "format": "uuid",
-      "pattern": "[a-f0-9]{8}-?[a-f0-9]{4}-?[47][a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}"
-    },
-    "DateTime": {
-      "type": "string",
-      "description": "Represents an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formatted date time value.",
-      "format": "date-time"
-    },
-    "Date": {
-      "type": "string",
-      "description": "Represents a date value.",
-      "format": "date"
-    },
-    "PostalCode_US": {
-      "type": "string",
-      "description": "Represents a [US postal code](https://en.wikipedia.org/wiki/ZIP_Code)."
-    },
-    "PostalCode_CA": {
-      "type": "string",
-      "description": "Represents a [Canada postal code](https://en.wikipedia.org/wiki/Postal_codes_in_Canada)."
-    },
-    "PostalCode_MX": {
-      "type": "string",
-      "description": "Represents a [Mexico postal code](https://en.wikipedia.org/wiki/List_of_postal_codes_in_Mexico)."
-    },
-    "Contact": {
+  "UUID": {
+    "type": "string",
+    "description": "Represents a Universally Unique Identifier ([UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)).",
+    "format": "uuid",
+    "pattern": "[a-f0-9]{8}-?[a-f0-9]{4}-?[47][a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}"
+  },
+  "DateTime": {
+    "type": "string",
+    "description": "Represents an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) formatted date time value.",
+    "format": "date-time"
+  },
+  "Date": {
+    "type": "string",
+    "description": "Represents a date value.",
+    "format": "date"
+  },
+  "PostalCode_US": {
+    "type": "string",
+    "description": "Represents a [US postal code](https://en.wikipedia.org/wiki/ZIP_Code)."
+  },
+  "PostalCode_CA": {
+    "type": "string",
+    "description": "Represents a [Canada postal code](https://en.wikipedia.org/wiki/Postal_codes_in_Canada)."
+  },
+  "PostalCode_MX": {
+    "type": "string",
+    "description": "Represents a [Mexico postal code](https://en.wikipedia.org/wiki/List_of_postal_codes_in_Mexico)."
+  },
+  "Contact": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "phone_number": {
+        "type": "string",
+        "nullable": true
+      },
+      "email_address": {
+        "type": "string",
+        "nullable": true
+      }
+    }
+  },
+  "PhoneNumber": {
+    "type": "string",
+    "description": "Represents an [E.164](https://en.wikipedia.org/wiki/E.164) formatted phone number."
+  },
+  "CurrencyCode": {
+    "type": "string",
+    "description": "Represents an [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) formatted currency code."
+  },
+  "PatchOperation": {
+    "type": "string",
+    "enum": [
+      "add",
+      "remove",
+      "replace",
+      "move",
+      "copy",
+      "test"
+    ],
+    "description": "Represents the operation to perform on the target representation."
+  },
+  "PatchRequestBody": {
+    "type": "array",
+    "items": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
+        "op": {
+          "$ref": "#/components/schemas/PatchOperation"
         },
-        "phone_number": {
+        "path": {
           "type": "string",
-          "nullable": true
+          "description": "Represents a JSON-Pointer value [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) that references a location with the target representation where the operation is to be performed."
         },
-        "email_address": {
+        "value": {
+          "type": "object",
+          "nullable": true,
+          "description": "Applicable for \"add\", \"replace\", & \"test\" operations. The value to apply at the location specified in the \"path\".",
+          "additionalProperties": true
+        },
+        "from": {
           "type": "string",
-          "nullable": true
+          "nullable": true,
+          "description": "Applicable for the \"move\" & \"copy\" operations. Represents a JSON-Pointer value that references the location in the target representation to move the value from."
         }
       }
     },
-    "PhoneNumber": {
-      "type": "string",
-      "description": "Represents an [E.164](https://en.wikipedia.org/wiki/E.164) formatted phone number."
-    },
-    "CurrencyCode": {
-      "type": "string",
-      "description": "Represents an [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) formatted currency code."
-    },
-    "PatchOperation": {
-      "type": "string",
-      "enum": [
-        "add",
-        "remove",
-        "replace",
-        "move",
-        "copy",
-        "test"
-      ],
-      "description": "Represents the operation to perform on the target representation."
-    },
-    "PatchRequestBody": {
-      "type": "array",
-      "items": {
+    "description": "Represents the set of operations to apply to the JSON representation of the target resource as defined in [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)."
+  },
+  "Error": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "description": "A URI reference ([RFC3986](https://datatracker.ietf.org/doc/html/rfc3986)) that identifies the error (\"problem\") type."
+      },
+      "title": {
+        "type": "string",
+        "description": "A short, human-readable summary of the error (\"problem\") type."
+      },
+      "detail": {
+        "type": "string",
+        "nullable": true,
+        "description": "A human-readable explanation specific to this occurrence of the error (\"problem\")."
+      },
+      "status": {
+        "type": "number",
+        "description": "The HTTP status code ([RFC7231, Section 6](https://datatracker.ietf.org/doc/html/rfc7231#section-6)) generated by the origin server for this occurrence of the error (\"problem\")."
+      }
+    }
+  },
+  "AuthenticationError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      }
+    ],
+    "description": "Representing an error caused by failed authentication."
+  },
+  "NotFoundError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      }
+    ],
+    "description": "Representing an error caused by attempting to access a non-existing resource."
+  },
+  "ConflictingCreationError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      },
+      {
         "type": "object",
         "properties": {
-          "op": {
-            "$ref": "#/components/schemas/PatchOperation"
-          },
-          "path": {
-            "type": "string",
-            "description": "Represents a JSON-Pointer value [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) that references a location with the target representation where the operation is to be performed."
-          },
-          "value": {
-            "type": "object",
-            "nullable": true,
-            "description": "Applicable for \"add\", \"replace\", & \"test\" operations. The value to apply at the location specified in the \"path\".",
-            "additionalProperties": true
-          },
-          "from": {
-            "type": "string",
-            "nullable": true,
-            "description": "Applicable for the \"move\" & \"copy\" operations. Represents a JSON-Pointer value that references the location in the target representation to move the value from."
-          }
-        }
-      },
-      "description": "Represents the set of operations to apply to the JSON representation of the target resource as defined in [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)."
-    },
-    "Error": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "A URI reference ([RFC3986](https://datatracker.ietf.org/doc/html/rfc3986)) that identifies the error (\"problem\") type."
-        },
-        "title": {
-          "type": "string",
-          "description": "A short, human-readable summary of the error (\"problem\") type."
-        },
-        "detail": {
-          "type": "string",
-          "nullable": true,
-          "description": "A human-readable explanation specific to this occurrence of the error (\"problem\")."
-        },
-        "status": {
-          "type": "number",
-          "description": "The HTTP status code ([RFC7231, Section 6](https://datatracker.ietf.org/doc/html/rfc7231#section-6)) generated by the origin server for this occurrence of the error (\"problem\")."
-        }
-      }
-    },
-    "AuthenticationError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        }
-      ],
-      "description": "Representing an error caused by failed authentication."
-    },
-    "NotFoundError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        }
-      ],
-      "description": "Representing an error caused by attempting to access a non-existing resource."
-    },
-    "ConflictingCreationError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "diff": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": true
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "A description of differences between the requested resource state and the existing state."
-            }
-          }
-        }
-      ],
-      "description": "Representing an error caused by attempting to create an already-existing resource with different state."
-    },
-    "RateLimitExceededError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        }
-      ],
-      "description": "Representing an error caused by exceeding the rate limit."
-    },
-    "InvalidQueryParameterError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "The name of the offending query parameter."
-            },
-            "value": {
-              "type": "string",
-              "description": "The unsupported query parameter value."
-            }
-          }
-        }
-      ],
-      "description": "Representing an error caused by providing an unsupported value for a query parameter."
-    },
-    "DuplicateParametersError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        }
-      ],
-      "description": "Representing an error caused by providing a request \\\n      that cannot be resolved due to duplicate parameters."
-    },
-    "ResourceInvalidError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "errors": {
-              "type": "object",
-              "additionalProperties": {
+          "diff": {
+            "anyOf": [
+              {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "additionalProperties": true
                 }
               },
-              "description": "The indicators of why the request would result in invalid resource state."
-            }
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A description of differences between the requested resource state and the existing state."
           }
         }
-      ],
-      "description": "Representing an error caused by providing a request that would result in invalid resource state."
-    },
-    "InvalidRequestError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "errors": {
+      }
+    ],
+    "description": "Representing an error caused by attempting to create an already-existing resource with different state."
+  },
+  "RateLimitExceededError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      }
+    ],
+    "description": "Representing an error caused by exceeding the rate limit."
+  },
+  "InvalidQueryParameterError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the offending query parameter."
+          },
+          "value": {
+            "type": "string",
+            "description": "The unsupported query parameter value."
+          }
+        }
+      }
+    ],
+    "description": "Representing an error caused by providing an unsupported value for a query parameter."
+  },
+  "DuplicateParametersError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      }
+    ],
+    "description": "Representing an error caused by providing a request \\\n      that cannot be resolved due to duplicate parameters."
+  },
+  "ResourceInvalidError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
               "type": "array",
               "items": {
-                "type": "object"
-              },
-              "description": "The indicators of why the request is invalid."
-            }
+                "type": "string"
+              }
+            },
+            "description": "The indicators of why the request would result in invalid resource state."
           }
         }
-      ],
-      "description": "Representing an error caused by providing an invalid request."
-    },
-    "StaleUpdateError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "diff": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": true
-                  }
-                },
-                {
-                  "type": "null"
+      }
+    ],
+    "description": "Representing an error caused by providing a request that would result in invalid resource state."
+  },
+  "InvalidRequestError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "The indicators of why the request is invalid."
+          }
+        }
+      }
+    ],
+    "description": "Representing an error caused by providing an invalid request."
+  },
+  "StaleUpdateError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "diff": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
                 }
-              ],
-              "description": "A description of differences between the requested resource state and the existing state."
-            }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A description of differences between the requested resource state and the existing state."
           }
         }
-      ],
-      "description": "Representing an error caused by attempting to update a resource based on stale context."
-    },
-    "ForbiddenError": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Error"
-        }
-      ],
-      "description": "Representing an error caused by insufficient privileges."
-    },
-    "BusinessEntityType": {
-      "type": "string",
-      "enum": [
-        "SHIPPER",
-        "CONSIGNEE"
-      ],
-      "description": "Represents the type of a business participating in a freight transaction."
-    },
-    "Carrier": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the carrier."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the carrier."
-        },
-        "standard_carrier_alpha_code": {
-          "type": "string",
-          "description": "The 2-4 letter identifier for the carrier issued by the [NMFTA](http://www.nmfta.org/). Also referred to as [SCAC](http://www.nmfta.org/pages/scac)."
-        },
-        "mc_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The identifier of the motor carrier authority granted to the carrier by the [FMCSA](https://www.fmcsa.dot.gov/)."
-        },
-        "dot_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The identifier for the carrier issued by the Department of Transportation ([DOT](https://www.transportation.gov/))."
-        },
-        "business_name": {
-          "type": "string",
-          "description": "The name of the carrier company."
-        },
-        "domicile_address_1": {
-          "type": "string",
-          "nullable": true,
-          "description": "The first line of the carrier company headquarters address."
-        },
-        "domicile_address_2": {
-          "type": "string",
-          "nullable": true,
-          "description": "The second line of the carrier company headquarters address."
-        },
-        "domicile_city": {
-          "type": "string",
-          "nullable": true,
-          "description": "The city of the carrier company headquarters address."
-        },
-        "domicile_principle_subdivision": {
-          "type": "string",
-          "nullable": true,
-          "description": "The state / province / region of the carrier company headquarters address."
-        },
-        "domicile_country": {
-          "type": "string",
-          "nullable": true,
-          "description": "The country of the carrier company headquarters address."
-        },
-        "domicile_postal_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/PostalCode_US"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_CA"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_MX"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The postal code of the carrier company headquarters address."
-        },
-        "shipper_contact": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Contact"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The contact at the shipper responsible for the relationship with this carrier."
-        },
-        "carrier_contact": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Contact"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The contact at the carrier responsible for the relationship with the shipper."
-        }
-      },
-      "description": "A company responsible for the transportation of goods on behalf of the shipper."
-    },
-    "CarrierCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Carrier"
       }
-    },
-    "Facility": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the facility."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the facility."
-        },
-        "name": {
-          "type": "string",
-          "nullable": true,
-          "description": "The name that the shipper uses to identify the facility."
-        },
-        "address_1": {
-          "type": "string",
-          "nullable": true,
-          "description": "The first line of the facility address."
-        },
-        "address_2": {
-          "type": "string",
-          "nullable": true,
-          "description": "The second line of the facility address."
-        },
-        "city": {
-          "type": "string",
-          "nullable": true,
-          "description": "The city of the facility address."
-        },
-        "principle_subdivision": {
-          "type": "string",
-          "nullable": true,
-          "description": "The state / province / region of the facility address."
-        },
-        "country": {
-          "type": "string",
-          "nullable": true,
-          "description": "The country of the facility address."
-        },
-        "postal_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/PostalCode_US"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_CA"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_MX"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The postal code of the facility address."
-        },
-        "time_zone": {
-          "type": "string",
-          "nullable": true,
-          "description": "The time zone associated to the facility address."
-        },
-        "report_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the report that this facility is associated with."
-        }
-      },
-      "description": "A facility involved within the shippers transportation operations."
-    },
-    "FacilityCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Facility"
+    ],
+    "description": "Representing an error caused by attempting to update a resource based on stale context."
+  },
+  "ForbiddenError": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Error"
       }
-    },
-    "FacilityPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the facility."
-        },
-        "name": {
-          "type": "string",
-          "nullable": true,
-          "description": "The name that the shipper uses to identify the facility."
-        },
-        "business_entity_id": {
-          "$ref": "#/components/schemas/UUID",
-          "nullable": true,
-          "description": "The ID of the business that operates out of the facility."
-        },
-        "business_entity_type": {
-          "$ref": "#/components/schemas/BusinessEntityType",
-          "nullable": true,
-          "description": "The type of the business entity that operates out of the facility."
-        },
-        "raw_address": {
-          "type": "string",
-          "description": "The textual representation of the complete address for the facility."
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this facility is associated with."
-        }
+    ],
+    "description": "Representing an error caused by insufficient privileges."
+  },
+  "BusinessEntityType": {
+    "type": "string",
+    "enum": [
+      "SHIPPER",
+      "CONSIGNEE"
+    ],
+    "description": "Represents the type of a business participating in a freight transaction."
+  },
+  "Carrier": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the carrier."
       },
-      "description": "The representation accepted for facility creation in ISO."
-    },
-    "Week": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week."
-        },
-        "week": {
-          "type": "integer",
-          "description": "The ordinal number of week according to the shipper."
-        },
-        "year": {
-          "type": "integer",
-          "description": "The calendar year of week."
-        },
-        "started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the week begins."
-        },
-        "ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the week ends."
-        }
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the carrier."
       },
-      "description": "A shipper defined notion of a week."
-    },
-    "WeekPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "week": {
-          "type": "integer",
-          "description": "The ordinal number of week according to the shipper."
-        },
-        "year": {
-          "type": "integer",
-          "description": "The calendar year of week."
-        },
-        "started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the week begins."
-        },
-        "ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the week ends."
-        }
+      "standard_carrier_alpha_code": {
+        "type": "string",
+        "description": "The 2-4 letter identifier for the carrier issued by the [NMFTA](http://www.nmfta.org/). Also referred to as [SCAC](http://www.nmfta.org/pages/scac)."
       },
-      "description": "The representation accepted for week creation in ISO."
-    },
-    "WeekCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Week"
-      }
-    },
-    "Consignee": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the consignee."
-        },
-        "external_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "description": "An identifier that the shipper uses to identify the consignee."
-          }
-        },
-        "business_name": {
-          "type": "string",
-          "description": "The name of the consignee company."
-        },
-        "domicile_address_1": {
-          "type": "string",
-          "nullable": true,
-          "description": "The first line of the consignee company headquarters address."
-        },
-        "domicile_address_2": {
-          "type": "string",
-          "nullable": true,
-          "description": "The second line of the consignee company headquarters address."
-        },
-        "domicile_city": {
-          "type": "string",
-          "nullable": true,
-          "description": "The city of the consignee company headquarters address."
-        },
-        "domicile_principle_subdivision": {
-          "type": "string",
-          "nullable": true,
-          "description": "The state / province / region of the consignee company headquarters address."
-        },
-        "domicile_country": {
-          "type": "string",
-          "nullable": true,
-          "description": "The country of the consignee company headquarters address."
-        },
-        "domicile_postal_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/PostalCode_US"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_CA"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_MX"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The postal code of the consignee company headquarters address."
-        },
-        "shipper_contact": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Contact"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The contact at the shipper responsible for the relationship with this consignee."
-        },
-        "consignee_contact": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Contact"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The contact at the consignee responsible for the relationship with the shipper."
-        }
+      "mc_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The identifier of the motor carrier authority granted to the carrier by the [FMCSA](https://www.fmcsa.dot.gov/)."
       },
-      "description": "A company responsible for the payment of, and typically the recipient of a shipment."
-    },
-    "ConsigneePostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the consignee."
-        },
-        "business_name": {
-          "type": "string",
-          "description": "The name of the consignee company."
-        },
-        "domicile_address_1": {
-          "type": "string",
-          "nullable": true,
-          "description": "The first line of the consignee company headquarters address."
-        },
-        "domicile_address_2": {
-          "type": "string",
-          "nullable": true,
-          "description": "The second line of the consignee company headquarters address."
-        },
-        "domicile_city": {
-          "type": "string",
-          "nullable": true,
-          "description": "The city of the consignee company headquarters address."
-        },
-        "domicile_principle_subdivision": {
-          "type": "string",
-          "nullable": true,
-          "description": "The state / province / region of the consignee company headquarters address."
-        },
-        "domicile_country": {
-          "type": "string",
-          "nullable": true,
-          "description": "The country of the consignee company headquarters address."
-        },
-        "domicile_postal_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/PostalCode_US"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_CA"
-            },
-            {
-              "$ref": "#/components/schemas/PostalCode_MX"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The postal code of the consignee company headquarters address."
-        }
+      "dot_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The identifier for the carrier issued by the Department of Transportation ([DOT](https://www.transportation.gov/))."
       },
-      "description": "The representation accepted for consignee creation in ISO."
-    },
-    "ConsigneeCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Consignee"
-      }
-    },
-    "Lane": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the lane."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the lane."
-        },
-        "awards": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/UUID"
-          },
-          "description": "The IDs of the awards associated to the lane."
-        }
+      "business_name": {
+        "type": "string",
+        "description": "The name of the carrier company."
       },
-      "description": "An origin/destination pair defined within the context of RFP contracts."
-    },
-    "LanePostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The unique identifier that the shipper uses to identify the lane."
-        }
+      "domicile_address_1": {
+        "type": "string",
+        "nullable": true,
+        "description": "The first line of the carrier company headquarters address."
       },
-      "description": "The representation accepted for lane creation in ISO."
-    },
-    "LaneCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Lane"
-      }
-    },
-    "Award": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the award."
-        },
-        "carrier_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the recipient carrier of the award."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this award pertains to."
-        },
-        "commitment": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of shipments the carrier has committed to for this award."
-        },
-        "utilized": {
-          "type": "integer",
-          "description": "The number of shipments the carrier has completed for the week."
-        },
-        "started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the award period starts at."
-        },
-        "ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the award period ends at."
-        }
+      "domicile_address_2": {
+        "type": "string",
+        "nullable": true,
+        "description": "The second line of the carrier company headquarters address."
       },
-      "description": "A Request For Pricing (RFP) award granted from a shipper to a carrier."
-    },
-    "AwardPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "carrier_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the recipient carrier of the award."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this award pertains to."
-        },
-        "commitment": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of shipments the carrier has committed to for this award."
-        },
-        "utilized": {
-          "type": "integer",
-          "description": "The number of shipments the carrier has completed for the week."
-        },
-        "started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the award period starts at."
-        },
-        "ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the award period ends at."
-        }
+      "domicile_city": {
+        "type": "string",
+        "nullable": true,
+        "description": "The city of the carrier company headquarters address."
       },
-      "description": "The representation accepted for award creation in ISO."
-    },
-    "AwardCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Award"
-      }
-    },
-    "PurchaseOrder": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the purchase order."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier (PO number) that the shipper and consignee uses to identify the purchase order."
-        },
-        "consignee_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the consignee this purchase order is associated with."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this purchase order pertains to."
-        },
-        "placed_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the consignee created (issued) the purchase order."
-        },
-        "original_requested_arrival_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the consignee requests to receive the purchase order."
-        },
-        "unit_type": {
-          "type": "string",
-          "nullable": true,
-          "description": "The type of packaging units comprised by the purchase order."
-        },
-        "unit_quantity": {
-          "$ref": "#/components/parameters/purchase_order_unit_quantity"
-        },
-        "shipped_quantity": {
-          "$ref": "#/components/parameters/purchase_order_shipped_quantity"
-        },
-        "value": {
-          "$ref": "#/components/parameters/purchase_order_value"
-        },
-        "value_currency_code": {
-          "$ref": "#/components/parameters/purchase_order_value_currency_code"
-        },
-        "linehaul_spend": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Payable base rate sliced by this order."
-        },
-        "linehaul_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for linehaul_spend."
-        },
-        "accessorial_value": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable value of all accessorials sliced by this order."
-        },
-        "accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for accessorial_value."
-        },
-        "fuel_surcharge": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable fuel surcharge sliced by this order."
-        },
-        "fuel_surcharge_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for fuel_surcharge."
-        },
-        "total_spend": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable rate sliced by this order."
-        },
-        "total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for total_spend."
-        },
-        "credit_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Total value for all credits sliced by this order."
-        },
-        "credit_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "net_weight_in_pounds": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Net product weight in pounds in this order."
-        },
-        "confirmed_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The confirmed delivery date (CDD) for a purchase order. This is generally set by the shipper, based on what they can commit to."
-        },
-        "report_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the report that this purchase order is associated with."
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/PurchaseOrderItem"
-          },
-          "nullable": true
-        }
+      "domicile_principle_subdivision": {
+        "type": "string",
+        "nullable": true,
+        "description": "The state / province / region of the carrier company headquarters address."
       },
-      "description": "A collection of goods purchased from the shipper by the consignee."
-    },
-    "PurchaseOrderItem": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the purchase order item."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier the shipper and consignee uses to identify the purchase order item."
-        },
-        "unit_quantity": {
-          "$ref": "#/components/parameters/purchase_order_unit_quantity"
-        },
-        "shipped_quantity": {
-          "$ref": "#/components/parameters/purchase_order_shipped_quantity"
-        },
-        "value": {
-          "$ref": "#/components/parameters/purchase_order_value"
-        },
-        "value_currency_code": {
-          "$ref": "#/components/parameters/purchase_order_value_currency_code"
-        }
+      "domicile_country": {
+        "type": "string",
+        "nullable": true,
+        "description": "The country of the carrier company headquarters address."
       },
-      "description": "A collection of goods purchased from the shipper by the consignee."
-    },
-    "PurchaseOrderPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier (PO number) that the shipper and consignee uses to identify the purchase order."
-        },
-        "consignee_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the consignee this purchase order is associated with."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this purchase order pertains to."
-        },
-        "placed_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the consignee created (issued) the purchase order."
-        },
-        "original_requested_arrival_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the consignee requests to receive the purchase order."
-        },
-        "unit_type": {
-          "type": "string",
-          "nullable": true,
-          "description": "The type of packaging units comprised by the purchase order."
-        },
-        "unit_quantity": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The amount packaging units comprised by the purchase order."
-        },
-        "shipped_quantity": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "The amount packaging units that were actually shipped."
-        },
-        "value": {
-          "type": "number",
-          "nullable": true,
-          "description": "The monetary value of the purchase order."
-        },
-        "value_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The currency code of monetary value of the purchase order."
-        },
-        "linehaul_spend": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Payable base rate sliced by this order."
-        },
-        "linehaul_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for linehaul_spend."
-        },
-        "accessorial_value": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable value of all accessorials sliced by this order."
-        },
-        "accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for accessorial_value."
-        },
-        "fuel_surcharge": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable fuel surcharge sliced by this order."
-        },
-        "fuel_surcharge_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for fuel_surcharge."
-        },
-        "total_spend": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total payable rate sliced by this order."
-        },
-        "total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for total_spend."
-        },
-        "confirmed_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The confirmed delivery date (CDD) for a purchase order. This is generally set by the shipper, based on what they can commit to."
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this purchase order is associated with."
-        }
-      },
-      "description": "The representation accepted for purchase order creation in ISO."
-    },
-    "PurchaseOrderItemPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier the shipper and consignee uses to identify the purchase order item."
-        },
-        "unit_quantity": {
-          "$ref": "#/components/parameters/purchase_order_unit_quantity"
-        },
-        "shipped_quantity": {
-          "$ref": "#/components/parameters/purchase_order_shipped_quantity"
-        },
-        "value": {
-          "$ref": "#/components/parameters/purchase_order_value"
-        },
-        "value_currency_code": {
-          "$ref": "#/components/parameters/purchase_order_value_currency_code"
-        }
-      },
-      "description": "The representation accepted for purchase order item creation in ISO."
-    },
-    "PurchaseOrderShipperOrder": {
-      "type": "object",
-      "properties": {
-        "purchase_order_id": {
-          "required": true,
-          "nullable": false,
-          "type": "string",
-          "description": "The ID of the purchase order associated to the shipper order."
-        },
-        "shipment_external_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external identifier the shipper uses to identify the shipment."
-        },
-        "shipper_order_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "Identifier for the segment of a purchase order associated with a shipment\""
-        },
-        "value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Value of items in shipment as part of the purchase order whole."
-        },
-        "value_currency_code": {
-          "type": "string",
-          "nullable": true,
-          "description": "Currency code for value field."
-        }
-      },
-      "description": "A collection of order data associated with an order's shipments."
-    },
-    "PurchaseOrderShipperOrderPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "purchase_order_id": {
-          "required": true,
-          "nullable": false,
-          "type": "string",
-          "description": "The ID of the purchase order associated to the shipper order."
-        },
-        "shipment_external_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external identifier the shipper uses to identify the shipment."
-        },
-        "shipper_order_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "Identifier for the segment of a purchase order associated with a shipment\""
-        },
-        "value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Value of items in shipment as part of the purchase order whole."
-        },
-        "value_currency_code": {
-          "type": "string",
-          "nullable": true,
-          "description": "Currency code for value field."
-        }
-      }
-    },
-    "PurchaseOrderShipperOrderCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/PurchaseOrderShipperOrder"
-      }
-    },
-    "PurchaseOrderCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/PurchaseOrder"
-      }
-    },
-    "ReasonCode": {
-      "type": "object",
-      "properties": {
-        "exception_type": {
-          "type": "string",
-          "description": "The exception type the reason code should be applied to, if it occurred.\\\n            Example: 'late_delivery'."
-        },
-        "code": {
-          "type": "string",
-          "description": "The reason code to be applied if the exception type specified occurs."
-        }
-      },
-      "description": "Applicable reason code for the exception specified."
-    },
-    "Tender": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the tender."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the tender."
-        },
-        "carrier_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the carrier this tender was issued to."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this tender pertains to."
-        },
-        "lane_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the lane that this tender is associated to."
-        },
-        "sent_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the tender was sent to the carrier."
-        },
-        "responded_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the carrier responded to the tender."
-        },
-        "shipment_external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the shipment."
-        },
-        "shipment_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the shipment that this tender is associated to."
-        },
-        "status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "tender_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "sequence_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The ordinal number of the tender."
-        },
-        "rush": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is expedited."
-        },
-        "bid_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderBidStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "award_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderAwardStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "award_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the award that this tender is associated to."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "method": {
-          "type": "string",
-          "nullable": true,
-          "description": "Indicates the decision process or circumstances behind how the carrier was selected for the tender."
-        },
-        "legs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/Leg"
-          }
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this shipment is associated with."
-        },
-        "multiple_stops": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
-        },
-        "region": {
-          "type": "string",
-          "nullable": true,
-          "description": "The region that this shipment is associated with."
-        },
-        "delivery_numbers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The delivery number."
-          },
-          "description": "The delivery numbers associated with this shipment."
-        }
-      },
-      "description": "An offer issued to a carrier to haul a shipment."
-    },
-    "TenderCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Tender"
-      }
-    },
-    "TenderPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the tender."
-        },
-        "carrier_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the carrier this tender was issued to."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this tender pertains to."
-        },
-        "lane_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the lane that this tender is associated to."
-        },
-        "sent_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the tender was sent to the carrier."
-        },
-        "responded_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the carrier responded to the tender."
-        },
-        "shipment_external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the shipment."
-        },
-        "status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "tender_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "sequence_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The ordinal number of the tender."
-        },
-        "rush": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is expedited."
-        },
-        "bid_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderBidStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "award_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenderAwardStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "award_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the award that this tender is associated to."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "method": {
-          "type": "string",
-          "nullable": true,
-          "description": "Indicates the decision process or circumstances behind how the carrier was selected for the tender."
-        },
-        "legs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/LegPostRequestBody"
-          }
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this shipment is associated with."
-        },
-        "multiple_stops": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
-        },
-        "region": {
-          "type": "string",
-          "nullable": true,
-          "description": "The region that this shipment is associated with."
-        },
-        "delivery_numbers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The delivery number."
-          },
-          "description": "The delivery numbers associated with this shipment."
-        },
-        "custom_data": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Arbitrary custom data to attach to the tender for analytical purposes."
-        },
-        "reporting_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date that the tender should be anchored to in the context of date-based searches."
-        }
-      },
-      "description": "The representation accepted for tender creation in ISO."
-    },
-    "Shipment": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the shipment."
-        },
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the shipment."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this shipment pertains to."
-        },
-        "tracking_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TrackingStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "rush": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is expedited."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "legs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/Leg"
-          }
-        },
-        "tenders": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/UUID"
-          }
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this shipment is associated with."
-        },
-        "multiple_stops": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
-        },
-        "mode": {
-          "type": "string",
-          "nullable": true,
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/ModeType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The mode of transportation utilized to transport the goods."
-        },
-        "equipment_type": {
-          "type": "string",
-          "nullable": true,
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/EquipmentType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Type of equipment required to carry the shipment."
-        },
-        "region": {
-          "type": "string",
-          "nullable": true,
-          "description": "The region that this shipment is associated with."
-        },
-        "delivery_numbers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The delivery number."
-          },
-          "description": "The delivery numbers associated with this shipment."
-        },
-        "linehaul_spend": {
-          "type": "number",
-          "nullable": true
-        },
-        "linehaul_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "planned_total_spend": {
-          "type": "number",
-          "nullable": true,
-          "description": "The contracted rate negotiated to deliver the shipment."
-        },
-        "planned_total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "total_spend_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "The final rate paid to deliver the shipment."
-        },
-        "total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "total_accessorial_value": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total value of all accessorials for this shipment."
-        },
-        "total_accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for total_accessorial_value."
-        },
-        "credit_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Total value for all credits for this shipment."
-        },
-        "credit_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "requested_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date that the consignee requests to receive the shipment. This is often the earliest ORAD of the purchase orders that the shipment fulfills. NB: This field is deprecated; this data should be specified on the requested_date field on the stop task.",
-          "deprecated": true
-        },
-        "planner_user_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the user that planned the shipment."
-        },
-        "confirmed_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to. NB: This field is deprecated; this data should be specified on the confirmed_date on the stop task.",
-          "deprecated": true
-        },
-        "fuel_surcharge_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Fuel surcharge accessorial cost"
-        },
-        "fuel_surcharge_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Fuel surcharge accessorial cost currency code"
-        },
-        "detention_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Detention cost (accessorial charge when driver is delayed)"
-        },
-        "detention_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for detention value"
-        },
-        "other_accessorial_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Other accessorial cost value"
-        },
-        "other_accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Other accessorial value currency code"
-        },
-        "customs_tax_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "All tax amounts (e.g. customs taxes) associated with movement of a shipment"
-        },
-        "customs_tax_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency for customs tax value"
-        },
-        "external_created_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "When was the shipment created in the partner system"
-        }
-      },
-      "description": "A shipment transporting goods for the shipper."
-    },
-    "ShipmentCollection": {
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/Shipment"
-      }
-    },
-    "ShipmentPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "external_id": {
-          "type": "string",
-          "description": "The external identifier that the shipper uses to identify the shipment."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this shipment pertains to."
-        },
-        "tracking_status": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TrackingStatus"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "rush": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is expedited."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "mode": {
-          "type": "string",
-          "nullable": true,
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/ModeType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The mode of transportation utilized to transport the goods."
-        },
-        "equipment_type": {
-          "type": "string",
-          "nullable": true,
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/EquipmentType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Type of equipment required to carry the shipment."
-        },
-        "legs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/LegPostRequestBody"
-          }
-        },
-        "tenders": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/UUID"
-          }
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this shipment is associated with."
-        },
-        "multiple_stops": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
-        },
-        "region": {
-          "type": "string",
-          "nullable": true,
-          "description": "The region that this shipment is associated with."
-        },
-        "delivery_numbers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The delivery number."
-          },
-          "description": "The delivery numbers associated with this shipment."
-        },
-        "planner_user_name": {
-          "type": "string",
-          "description": "The full name of the user that planned the shipment (eg. \"John Smith\")."
-        },
-        "linehaul_spend": {
-          "type": "number",
-          "nullable": true
-        },
-        "linehaul_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "planned_total_spend": {
-          "type": "number",
-          "nullable": true,
-          "description": "The contracted rate negotiated to deliver the shipment."
-        },
-        "planned_total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "total_spend_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "The final rate paid to deliver the shipment."
-        },
-        "total_spend_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "total_accessorial_value": {
-          "type": "number",
-          "format": "float",
-          "nullable": true,
-          "description": "Total value of all accessorials for this shipment."
-        },
-        "total_accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for total_accessorial_value."
-        },
-        "requested_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date that the consignee requests to receive the shipment. This is often the earliest ORAD of the purchase orders that the shipment fulfills."
-        },
-        "confirmed_delivery_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
-        },
-        "custom_data": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Arbitrary custom data to attach to the shipment for analytical purposes."
-        },
-        "reporting_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date that the shipment should be anchored to in the context of date-based searches."
-        },
-        "fuel_surcharge_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Fuel surcharge accessorial cost"
-        },
-        "fuel_surcharge_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Fuel surcharge accessorial cost currency code"
-        },
-        "detention_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Detention cost (accessorial charge when driver is delayed)"
-        },
-        "detention_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency code for detention value"
-        },
-        "other_accessorial_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "Other accessorial cost value"
-        },
-        "other_accessorial_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Other accessorial value currency code"
-        },
-        "customs_tax_value": {
-          "type": "number",
-          "nullable": true,
-          "description": "All tax amounts (e.g. customs taxes) associated with movement of a shipment"
-        },
-        "customs_tax_currency_code": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/CurrencyCode"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Currency for customs tax value"
-        },
-        "external_created_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "When was the shipment created in the partner system"
-        }
-      },
-      "description": "The representation accepted for shipment creation in ISO."
-    },
-    "Leg": {
-      "type": "object",
-      "properties": {
-        "carrier_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the carrier this leg is associated with."
-        },
-        "start": {
-          "$ref": "#/components/schemas/Stop",
-          "description": "The stop that the leg begins with."
-        },
-        "end": {
-          "$ref": "#/components/schemas/Stop",
-          "description": "The stop that the leg ends with."
-        },
-        "distance": {
-          "type": "number",
-          "nullable": true,
-          "description": "The distance amount between the start and end stops."
-        },
-        "distance_unit": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DistanceUnit"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "consignee_pickup": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates if the leg was executed by a consignee's carrier."
-        }
-      },
-      "description": "A trip between two stops."
-    },
-    "LegPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "carrier_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the carrier this leg is associated with."
-        },
-        "carrier_external_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "The unique identifier that the shipper uses to identify the carrier."
-        },
-        "start": {
-          "$ref": "#/components/schemas/Stop",
-          "description": "The stop that the leg begins with."
-        },
-        "end": {
-          "$ref": "#/components/schemas/Stop",
-          "description": "The stop that the leg ends with."
-        },
-        "distance": {
-          "type": "number",
-          "nullable": true,
-          "description": "The distance amount between the start and end stops."
-        },
-        "distance_unit": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DistanceUnit"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "consignee_pickup": {
-          "type": "boolean",
-          "nullable": true,
-          "description": "Indicates if the leg was executed by a consignee's carrier."
-        }
-      },
-      "description": "The representation accepted for leg creation in ISO."
-    },
-    "Stop": {
-      "type": "object",
-      "properties": {
-        "facility_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the facility where this stop occurs."
-        },
-        "facility_external_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external ID of the facility where this stop occurs."
-        },
-        "tasks": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/StopTask"
-          }
-        },
-        "original_scheduled_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The initial appointment scheduled for this stop."
-        },
-        "scheduled_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The final appointment scheduled for this stop."
-        },
-        "scheduled_appointment_started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The start of the final appointment window for this stop."
-        },
-        "scheduled_appointment_ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The end of the final appointment window for this stop."
-        },
-        "original_scheduled_appointment_started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The originally planned start of the appointment window for this stop."
-        },
-        "original_scheduled_appointment_ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The originally planned end of the appointment window for this stop."
-        },
-        "arrived_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the carrier arrived at the stop."
-        },
-        "departed_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the carrier departed the stop."
-        },
-        "departure_time_entered_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the shipper received the carrier departure date and time."
-        },
-        "buffered_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time of the buffer-adjusted appointment time for \"allowed lateness\"."
-        },
-        "estimated_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The estimated date of the of the pickup or delivery."
-        },
-        "reason_codes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/ReasonCode"
-          },
-          "nullable": true,
-          "description": "Optional array of objects with reason code and exception type string combinations to indicate applicable reason codes for possible stop exceptions."
-        },
-        "sequence_number": {
-          "type": "integer",
-          "description": "The ordinal number of the stop."
-        },
-        "trailer_operation": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TrailerOperation"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "trailer_operation_delay": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of seconds the carrier was delayed at a stop."
-        },
-        "appointment_created_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date & time when the appointment was scheduled."
-        }
-      },
-      "description": "A milestone along the transportation route where tasks are performed."
-    },
-    "StopPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "facility_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the facility where this stop occurs."
-        },
-        "facility_external_id": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external ID of the facility where this stop occurs."
-        },
-        "tasks": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/StopTaskPostRequestBody"
-          }
-        },
-        "original_scheduled_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The initial appointment scheduled for this stop."
-        },
-        "scheduled_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The final appointment scheduled for this stop."
-        },
-        "scheduled_appointment_started_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The start of the final appointment window for this stop."
-        },
-        "scheduled_appointment_ended_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The end of the final appointment window for this stop."
-        },
-        "arrived_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the carrier arrived at the stop."
-        },
-        "departed_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the carrier departed the stop."
-        },
-        "departure_time_entered_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time that the shipper received the carrier departure date and time."
-        },
-        "buffered_appointment_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The date and time of the buffer-adjusted appointment time for \"allowed lateness\"."
-        },
-        "estimated_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The estimated date of the of the pickup or delivery."
-        },
-        "sequence_number": {
-          "type": "integer",
-          "description": "The ordinal number of the stop."
-        },
-        "trailer_operation": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TrailerOperation"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "trailer_operation_delay": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of seconds the carrier was delayed at a stop."
-        },
-        "reason_codes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/ReasonCode"
-          },
-          "nullable": true,
-          "description": "Optional array of objects with reason code and exception type string combinations to indicate applicable reason codes for possible stop exceptions."
-        }
-      },
-      "description": "The representation accepted for stop creation in ISO."
-    },
-    "StopTask": {
-      "type": "object",
-      "properties": {
-        "business_entity_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the business that the task is being performed for."
-        },
-        "business_entity_type": {
-          "$ref": "#/components/schemas/BusinessEntityType",
-          "description": "The type of business that the task is being performed for."
-        },
-        "confirmed_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "This is based on the context of the task. For example, for a dropoff task, this is the confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The fulfillment strategy of the shipment."
-        },
-        "task_type": {
-          "$ref": "#/components/schemas/StopTaskType"
-        },
-        "purchase_order_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the purchase order associated to the task."
-        },
-        "purchase_order_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external ID of the purchase order associated to the task."
-        },
-        "requested_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "This is based on the context of the task. For example, for a dropoff task, this is the requested delivery date (RDD) for a shipment. This is generally the earliest ORAD of the purchase orders that the shipment fulfills."
-        }
-      },
-      "description": "An atomic action performed by the carrier at a stop."
-    },
-    "StopTaskPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "business_entity_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the business that the task is being performed for."
-        },
-        "business_entity_type": {
-          "$ref": "#/components/schemas/BusinessEntityType",
-          "description": "The type of business that the task is being performed for."
-        },
-        "confirmed_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "This is based on the context of the task. For example, for a dropoff task, this is the confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
-        },
-        "fulfillment_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/FulfillmentType"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The fulfillment strategy of the shipment."
-        },
-        "task_type": {
-          "$ref": "#/components/schemas/StopTaskType"
-        },
-        "purchase_order_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the purchase order associated to the task."
-        },
-        "purchase_order_number": {
-          "type": "string",
-          "nullable": true,
-          "description": "The external ID of the purchase order associated to the task."
-        },
-        "requested_date": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/Date"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "This is based on the context of the task. For example, for a dropoff task, this is the requested delivery date (RDD) for a shipment. This is generally the earliest ORAD of the purchase orders that the shipment fulfills."
-        }
-      },
-      "description": "The representation accepted for stop task creation in ISO."
-    },
-    "TenderType": {
-      "type": "string",
-      "enum": [
-        "CONTRACT",
-        "SPOT"
-      ],
-      "description": "Indicates whether the tender was for contract freight or the spot market."
-    },
-    "TenderStatus": {
-      "type": "string",
-      "enum": [
-        "CANCELLED",
-        "ACCEPTED",
-        "DECLINED",
-        "EXPIRED"
-      ],
-      "description": "Indicates the state of the tender."
-    },
-    "TenderAwardStatus": {
-      "type": "string",
-      "enum": [
-        "UNDER_COMMITTED",
-        "OVER_COMITTED"
-      ],
-      "description": "Indicates whether the tender was either under or over the award commitment."
-    },
-    "TenderBidStatus": {
-      "type": "string",
-      "enum": [
-        "SUBMITTED",
-        "UNSUBMITTED"
-      ],
-      "description": "Indicates whether the carrier submitted a spot bid for the tender."
-    },
-    "TrackingStatus": {
-      "type": "string",
-      "enum": [
-        "TRACKED",
-        "TRACKED_CONSISTENTLY",
-        "UNTRACKED"
-      ],
-      "description": "Indicates the tracking compliance for the shipment."
-    },
-    "ModeType": {
-      "type": "string",
-      "enum": [
-        "INTERMODAL",
-        "LESS_THAN_TRUCKLOAD",
-        "TRUCKLOAD",
-        "CUSTOMER_PICKUP",
-        "DRAYAGE",
-        "FLATBED",
-        "PARCEL",
-        "REFRIGERATED_TRUCKLOAD",
-        "TANKER"
-      ]
-    },
-    "EquipmentType": {
-      "type": "string",
-      "enum": [
-        "DRY_VAN",
-        "FLATBED",
-        "REFRIGERATED",
-        "CONTAINER",
-        "DRY_BULK_TANKER",
-        "POWER_ONLY",
-        "AUTO_CARRIER",
-        "STRAIGHT_BOX_TRUCK"
-      ]
-    },
-    "FulfillmentType": {
-      "type": "string",
-      "enum": [
-        "OUTBOUND",
-        "INBOUND",
-        "TRANSFER"
-      ],
-      "description": "Represents the type of fulfillment operation being performed."
-    },
-    "StopTaskType": {
-      "type": "string",
-      "enum": [
-        "PICKUP",
-        "DROPOFF"
-      ],
-      "description": "Indicates the type of task being performed at the stop."
-    },
-    "DistanceUnit": {
-      "type": "string",
-      "enum": [
-        "MILES",
-        "KILOMETERS"
-      ],
-      "description": "Represents a unit of distance measurement."
-    },
-    "TrailerOperation": {
-      "type": "string",
-      "enum": [
-        "LIVE",
-        "DROP"
-      ],
-      "description": "Indicates the type of loading or unloading operation being performed."
-    },
-    "Exception": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the exception."
-        },
-        "occurred_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the exception occurred."
-        },
-        "action_from": {
-          "$ref": "#/components/schemas/ExceptionActionFrom"
-        },
-        "rebuttal_outcome": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/ExceptionRebuttalOutcome"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "status": {
-          "$ref": "#/components/schemas/ExceptionStatus"
-        },
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this exception is associated with."
-        },
-        "type": {
-          "$ref": "#/components/schemas/ExceptionType"
-        },
-        "exceptionable_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the resource this exception is associated with."
-        },
-        "exceptionable_type": {
-          "$ref": "#/components/schemas/ExceptionableType"
-        },
-        "consignee_id": {
-          "$ref": "#/components/schemas/UUID",
-          "nullable": true,
-          "description": "The ID of the consignee this exception is associated with."
-        },
-        "is_visible": {
-          "type": "boolean",
-          "description": "Indicates if this exception is visible in ISO."
-        },
-        "is_rebuttable": {
-          "type": "boolean",
-          "description": "Indicates if this exception can be rebutted."
-        },
-        "responsible_party_type": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/ResponsiblePartyType"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "responsible_party_id": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/UUID"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The ID of the business deemed at fault for the exception."
-        },
-        "week_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the week that this exception pertains to."
-        },
-        "region": {
-          "type": "string",
-          "nullable": true,
-          "description": "The region that this exception is associated with."
-        }
-      },
-      "description": "An SLA violation between two parties."
-    },
-    "ExceptionCollection": {
-      "type": "array",
-      "items": {
+      "domicile_postal_code": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/TenderException"
+            "$ref": "#/components/schemas/PostalCode_US"
           },
           {
-            "$ref": "#/components/schemas/ShipmentException"
+            "$ref": "#/components/schemas/PostalCode_CA"
           },
           {
-            "$ref": "#/components/schemas/StopException"
+            "$ref": "#/components/schemas/PostalCode_MX"
           },
           {
-            "$ref": "#/components/schemas/PurchaseOrderException"
+            "type": "null"
+          }
+        ],
+        "description": "The postal code of the carrier company headquarters address."
+      },
+      "shipper_contact": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Contact"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The contact at the shipper responsible for the relationship with this carrier."
+      },
+      "carrier_contact": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Contact"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The contact at the carrier responsible for the relationship with the shipper."
+      }
+    },
+    "description": "A company responsible for the transportation of goods on behalf of the shipper."
+  },
+  "CarrierCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Carrier"
+    }
+  },
+  "Facility": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the facility."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the facility."
+      },
+      "name": {
+        "type": "string",
+        "nullable": true,
+        "description": "The name that the shipper uses to identify the facility."
+      },
+      "address_1": {
+        "type": "string",
+        "nullable": true,
+        "description": "The first line of the facility address."
+      },
+      "address_2": {
+        "type": "string",
+        "nullable": true,
+        "description": "The second line of the facility address."
+      },
+      "city": {
+        "type": "string",
+        "nullable": true,
+        "description": "The city of the facility address."
+      },
+      "principle_subdivision": {
+        "type": "string",
+        "nullable": true,
+        "description": "The state / province / region of the facility address."
+      },
+      "country": {
+        "type": "string",
+        "nullable": true,
+        "description": "The country of the facility address."
+      },
+      "postal_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PostalCode_US"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_CA"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_MX"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The postal code of the facility address."
+      },
+      "time_zone": {
+        "type": "string",
+        "nullable": true,
+        "description": "The time zone associated to the facility address."
+      },
+      "report_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the report that this facility is associated with."
+      }
+    },
+    "description": "A facility involved within the shippers transportation operations."
+  },
+  "FacilityCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Facility"
+    }
+  },
+  "FacilityPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the facility."
+      },
+      "name": {
+        "type": "string",
+        "nullable": true,
+        "description": "The name that the shipper uses to identify the facility."
+      },
+      "business_entity_id": {
+        "$ref": "#/components/schemas/UUID",
+        "nullable": true,
+        "description": "The ID of the business that operates out of the facility."
+      },
+      "business_entity_type": {
+        "$ref": "#/components/schemas/BusinessEntityType",
+        "nullable": true,
+        "description": "The type of the business entity that operates out of the facility."
+      },
+      "raw_address": {
+        "type": "string",
+        "description": "The textual representation of the complete address for the facility."
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this facility is associated with."
+      }
+    },
+    "description": "The representation accepted for facility creation in ISO."
+  },
+  "Week": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week."
+      },
+      "week": {
+        "type": "integer",
+        "description": "The ordinal number of week according to the shipper."
+      },
+      "year": {
+        "type": "integer",
+        "description": "The calendar year of week."
+      },
+      "started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the week begins."
+      },
+      "ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the week ends."
+      }
+    },
+    "description": "A shipper defined notion of a week."
+  },
+  "WeekPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "week": {
+        "type": "integer",
+        "description": "The ordinal number of week according to the shipper."
+      },
+      "year": {
+        "type": "integer",
+        "description": "The calendar year of week."
+      },
+      "started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the week begins."
+      },
+      "ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the week ends."
+      }
+    },
+    "description": "The representation accepted for week creation in ISO."
+  },
+  "WeekCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Week"
+    }
+  },
+  "Consignee": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the consignee."
+      },
+      "external_ids": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "An identifier that the shipper uses to identify the consignee."
+        }
+      },
+      "business_name": {
+        "type": "string",
+        "description": "The name of the consignee company."
+      },
+      "domicile_address_1": {
+        "type": "string",
+        "nullable": true,
+        "description": "The first line of the consignee company headquarters address."
+      },
+      "domicile_address_2": {
+        "type": "string",
+        "nullable": true,
+        "description": "The second line of the consignee company headquarters address."
+      },
+      "domicile_city": {
+        "type": "string",
+        "nullable": true,
+        "description": "The city of the consignee company headquarters address."
+      },
+      "domicile_principle_subdivision": {
+        "type": "string",
+        "nullable": true,
+        "description": "The state / province / region of the consignee company headquarters address."
+      },
+      "domicile_country": {
+        "type": "string",
+        "nullable": true,
+        "description": "The country of the consignee company headquarters address."
+      },
+      "domicile_postal_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PostalCode_US"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_CA"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_MX"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The postal code of the consignee company headquarters address."
+      },
+      "shipper_contact": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Contact"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The contact at the shipper responsible for the relationship with this consignee."
+      },
+      "consignee_contact": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Contact"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The contact at the consignee responsible for the relationship with the shipper."
+      }
+    },
+    "description": "A company responsible for the payment of, and typically the recipient of a shipment."
+  },
+  "ConsigneePostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the consignee."
+      },
+      "business_name": {
+        "type": "string",
+        "description": "The name of the consignee company."
+      },
+      "domicile_address_1": {
+        "type": "string",
+        "nullable": true,
+        "description": "The first line of the consignee company headquarters address."
+      },
+      "domicile_address_2": {
+        "type": "string",
+        "nullable": true,
+        "description": "The second line of the consignee company headquarters address."
+      },
+      "domicile_city": {
+        "type": "string",
+        "nullable": true,
+        "description": "The city of the consignee company headquarters address."
+      },
+      "domicile_principle_subdivision": {
+        "type": "string",
+        "nullable": true,
+        "description": "The state / province / region of the consignee company headquarters address."
+      },
+      "domicile_country": {
+        "type": "string",
+        "nullable": true,
+        "description": "The country of the consignee company headquarters address."
+      },
+      "domicile_postal_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PostalCode_US"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_CA"
+          },
+          {
+            "$ref": "#/components/schemas/PostalCode_MX"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The postal code of the consignee company headquarters address."
+      }
+    },
+    "description": "The representation accepted for consignee creation in ISO."
+  },
+  "ConsigneeCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Consignee"
+    }
+  },
+  "Lane": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the lane."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the lane."
+      },
+      "awards": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UUID"
+        },
+        "description": "The IDs of the awards associated to the lane."
+      }
+    },
+    "description": "An origin/destination pair defined within the context of RFP contracts."
+  },
+  "LanePostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The unique identifier that the shipper uses to identify the lane."
+      }
+    },
+    "description": "The representation accepted for lane creation in ISO."
+  },
+  "LaneCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Lane"
+    }
+  },
+  "Award": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the award."
+      },
+      "carrier_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the recipient carrier of the award."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this award pertains to."
+      },
+      "commitment": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of shipments the carrier has committed to for this award."
+      },
+      "utilized": {
+        "type": "integer",
+        "description": "The number of shipments the carrier has completed for the week."
+      },
+      "started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the award period starts at."
+      },
+      "ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the award period ends at."
+      }
+    },
+    "description": "A Request For Pricing (RFP) award granted from a shipper to a carrier."
+  },
+  "AwardPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "carrier_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the recipient carrier of the award."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this award pertains to."
+      },
+      "commitment": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of shipments the carrier has committed to for this award."
+      },
+      "utilized": {
+        "type": "integer",
+        "description": "The number of shipments the carrier has completed for the week."
+      },
+      "started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the award period starts at."
+      },
+      "ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the award period ends at."
+      }
+    },
+    "description": "The representation accepted for award creation in ISO."
+  },
+  "AwardCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Award"
+    }
+  },
+  "PurchaseOrder": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the purchase order."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier (PO number) that the shipper and consignee uses to identify the purchase order."
+      },
+      "consignee_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the consignee this purchase order is associated with."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this purchase order pertains to."
+      },
+      "placed_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the consignee created (issued) the purchase order."
+      },
+      "original_requested_arrival_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the consignee requests to receive the purchase order."
+      },
+      "unit_type": {
+        "type": "string",
+        "nullable": true,
+        "description": "The type of packaging units comprised by the purchase order."
+      },
+      "unit_quantity": {
+        "$ref": "#/components/parameters/purchase_order_unit_quantity"
+      },
+      "shipped_quantity": {
+        "$ref": "#/components/parameters/purchase_order_shipped_quantity"
+      },
+      "value": {
+        "$ref": "#/components/parameters/purchase_order_value"
+      },
+      "value_currency_code": {
+        "$ref": "#/components/parameters/purchase_order_value_currency_code"
+      },
+      "linehaul_spend": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Payable base rate sliced by this order."
+      },
+      "linehaul_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for linehaul_spend."
+      },
+      "accessorial_value": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable value of all accessorials sliced by this order."
+      },
+      "accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for accessorial_value."
+      },
+      "fuel_surcharge": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable fuel surcharge sliced by this order."
+      },
+      "fuel_surcharge_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for fuel_surcharge."
+      },
+      "total_spend": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable rate sliced by this order."
+      },
+      "total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for total_spend."
+      },
+      "credit_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Total value for all credits sliced by this order."
+      },
+      "credit_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
           }
         ]
+      },
+      "net_weight_in_pounds": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Net product weight in pounds in this order."
+      },
+      "confirmed_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The confirmed delivery date (CDD) for a purchase order. This is generally set by the shipper, based on what they can commit to."
+      },
+      "report_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the report that this purchase order is associated with."
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PurchaseOrderItem"
+        },
+        "nullable": true
       }
     },
-    "TenderException": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Exception"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "An SLA violation related to a tender."
-    },
-    "ShipmentException": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Exception"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "An SLA violation related to a shipment."
-    },
-    "StopException": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Exception"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "shipment_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the shipment this exception is associated with."
-            },
-            "stop_sequence_number": {
-              "type": "integer",
-              "description": "The ordinal number of the stop."
-            },
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "An SLA violation related to a specific stop for shipment."
-    },
-    "PurchaseOrderException": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/Exception"
-        }
-      ],
-      "description": "An SLA violation related to a purchase order."
-    },
-    "ExceptionPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "report_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report that this exception is associated with."
-        },
-        "type": {
-          "$ref": "#/components/schemas/ExceptionType"
-        },
-        "exceptionable_type": {
-          "$ref": "#/components/schemas/ExceptionableType"
-        },
-        "consignee_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the consignee this exception is associated with."
-        },
-        "occurred_at": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/DateTime"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "The Date/Time the exception occurred at."
-        }
+    "description": "A collection of goods purchased from the shipper by the consignee."
+  },
+  "PurchaseOrderItem": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the purchase order item."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier the shipper and consignee uses to identify the purchase order item."
+      },
+      "unit_quantity": {
+        "$ref": "#/components/parameters/purchase_order_unit_quantity"
+      },
+      "shipped_quantity": {
+        "$ref": "#/components/parameters/purchase_order_shipped_quantity"
+      },
+      "value": {
+        "$ref": "#/components/parameters/purchase_order_value"
+      },
+      "value_currency_code": {
+        "$ref": "#/components/parameters/purchase_order_value_currency_code"
       }
     },
-    "TenderExceptionPostRequestBody": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/ExceptionPostRequestBody"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "exceptionable_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the tender this exception is associated with."
-            },
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "The representation accepted for tender exception creation in ISO."
-    },
-    "ShipmentExceptionPostRequestBody": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/ExceptionPostRequestBody"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "exceptionable_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the shipment this exception is associated with."
-            },
-            "leg_sequence_number": {
-              "type": "integer",
-              "nullable": true,
-              "description": "The ordinal number of the leg."
-            },
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "The representation accepted for shipment exception creation in ISO."
-    },
-    "StopExceptionPostRequestBody": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/ExceptionPostRequestBody"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "shipment_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the shipment this exception is associated with."
-            },
-            "shipment_external_id": {
-              "type": "string",
-              "description": "The external ID of the shipment this exception is associated with."
-            },
-            "stop_sequence_number": {
-              "type": "integer",
-              "description": "The ordinal number of the stop."
-            },
-            "carrier_id": {
-              "$ref": "#/components/schemas/UUID",
-              "description": "The ID of the carrier this exception is associated with."
-            }
-          }
-        }
-      ],
-      "description": "The representation accepted for stop exception creation in ISO."
-    },
-    "PurchaseOrderExceptionPostRequestBody": {
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/ExceptionPostRequestBody"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "exceptionable_id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the purchase order this exception is associated with."
-        }
+    "description": "A collection of goods purchased from the shipper by the consignee."
+  },
+  "PurchaseOrderPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier (PO number) that the shipper and consignee uses to identify the purchase order."
       },
-      "description": "The representation accepted for purchase order exception creation in ISO."
-    },
-    "ExceptionType": {
-      "type": "string",
-      "description": "Represents the type (classification) of the exception."
-    },
-    "ExceptionActionFrom": {
-      "type": "string",
-      "enum": [
-        "CARRIER",
-        "SHIPPER"
-      ],
-      "description": "Indicates the party currently responsible for the next action during the exception rebuttal process."
-    },
-    "ExceptionRebuttalOutcome": {
-      "type": "string",
-      "enum": [
-        "ACCEPTED",
-        "DECLINED",
-        "FORGIVEN"
-      ],
-      "description": "Indicates the outcome of the exception rebuttal process."
-    },
-    "ExceptionStatus": {
-      "type": "string",
-      "enum": [
-        "NEW",
-        "REVIEW",
-        "RESOLVED"
-      ],
-      "description": "Indicates the current state of the exception."
-    },
-    "ExceptionableType": {
-      "type": "string",
-      "enum": [
-        "TENDER",
-        "SHIPMENT",
-        "STOP",
-        "PURCHASE_ORDER"
-      ],
-      "description": "Represents the type of resource the exception occurred for."
-    },
-    "ResponsiblePartyType": {
-      "type": "string",
-      "enum": [
-        "CARRIER",
-        "CONSIGNEE",
-        "SHIPPER",
-        "OTHER"
-      ],
-      "description": "Indicates the party deemed at fault for the exception."
-    },
-    "ReportError": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report error."
-        },
-        "row_number": {
-          "type": "integer",
-          "description": "The row number in the report that experienced the error."
-        },
-        "row_data": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+      "consignee_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the consignee this purchase order is associated with."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this purchase order pertains to."
+      },
+      "placed_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
           },
-          "description": "The parsed data for the row that encountered an error."
-        },
-        "error": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/AuthenticationError"
-            },
-            {
-              "$ref": "#/components/schemas/NotFoundError"
-            },
-            {
-              "$ref": "#/components/schemas/ConflictingCreationError"
-            },
-            {
-              "$ref": "#/components/schemas/RateLimitExceededError"
-            },
-            {
-              "$ref": "#/components/schemas/InvalidQueryParameterError"
-            },
-            {
-              "$ref": "#/components/schemas/StaleUpdateError"
-            },
-            {
-              "$ref": "#/components/schemas/ForbiddenError"
-            },
-            {
-              "$ref": "#/components/schemas/ResourceInvalidError"
-            },
-            {
-              "$ref": "#/components/schemas/InvalidRequestError"
-            }
-          ],
-          "description": "The error that was encountered for the row."
-        }
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the consignee created (issued) the purchase order."
       },
-      "description": "An error encountered when processing a report."
-    },
-    "ReportErrorPostRequestBody": {
-      "type": "object",
-      "properties": {
-        "row_number": {
-          "type": "integer",
-          "description": "The row number in the report that experienced the error."
-        },
-        "row_data": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+      "original_requested_arrival_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
           },
-          "description": "The parsed data for the row that encountered an error."
-        },
-        "error": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/AuthenticationError"
-            },
-            {
-              "$ref": "#/components/schemas/NotFoundError"
-            },
-            {
-              "$ref": "#/components/schemas/ConflictingCreationError"
-            },
-            {
-              "$ref": "#/components/schemas/RateLimitExceededError"
-            },
-            {
-              "$ref": "#/components/schemas/InvalidQueryParameterError"
-            },
-            {
-              "$ref": "#/components/schemas/StaleUpdateError"
-            },
-            {
-              "$ref": "#/components/schemas/ForbiddenError"
-            },
-            {
-              "$ref": "#/components/schemas/ResourceInvalidError"
-            },
-            {
-              "$ref": "#/components/schemas/InvalidRequestError"
-            }
-          ],
-          "description": "The error that was encountered for the row."
-        }
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the consignee requests to receive the purchase order."
       },
-      "description": "The representation accepted for report error creation in ISO."
-    },
-    "ReportStatus": {
-      "type": "string",
-      "enum": [
-        "UPLOADED",
-        "PROCESSING",
-        "PROCESSED",
-        "DELETING"
-      ],
-      "description": "Indicates the current state of the report."
-    },
-    "Report": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/components/schemas/UUID",
-          "description": "The ID of the report."
-        },
-        "status": {
-          "$ref": "#/components/schemas/ReportStatus"
-        },
-        "uploaded_at": {
-          "$ref": "#/components/schemas/DateTime",
-          "description": "The date and time that the report was uploaded."
-        },
-        "filename": {
-          "type": "string",
-          "nullable": true,
-          "description": "The filename of the file provided for the report."
-        },
-        "eligible_rows": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of rows eligible for processing."
-        },
-        "total_rows": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The total number of rows provided in the file."
-        },
-        "processed_rows": {
-          "type": "integer",
-          "nullable": true,
-          "description": "The number of rows currently processed for the file."
-        },
-        "percentage_complete": {
-          "type": "number",
-          "description": "The percentage indicating the processing progress."
-        }
+      "unit_type": {
+        "type": "string",
+        "nullable": true,
+        "description": "The type of packaging units comprised by the purchase order."
       },
-      "description": "A file containing transportation data to be processed by ISO."
+      "unit_quantity": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The amount packaging units comprised by the purchase order."
+      },
+      "shipped_quantity": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "The amount packaging units that were actually shipped."
+      },
+      "value": {
+        "type": "number",
+        "nullable": true,
+        "description": "The monetary value of the purchase order."
+      },
+      "value_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The currency code of monetary value of the purchase order."
+      },
+      "linehaul_spend": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Payable base rate sliced by this order."
+      },
+      "linehaul_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for linehaul_spend."
+      },
+      "accessorial_value": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable value of all accessorials sliced by this order."
+      },
+      "accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for accessorial_value."
+      },
+      "fuel_surcharge": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable fuel surcharge sliced by this order."
+      },
+      "fuel_surcharge_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for fuel_surcharge."
+      },
+      "total_spend": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total payable rate sliced by this order."
+      },
+      "total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for total_spend."
+      },
+      "confirmed_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The confirmed delivery date (CDD) for a purchase order. This is generally set by the shipper, based on what they can commit to."
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this purchase order is associated with."
+      }
+    },
+    "description": "The representation accepted for purchase order creation in ISO."
+  },
+  "PurchaseOrderItemPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier the shipper and consignee uses to identify the purchase order item."
+      },
+      "unit_quantity": {
+        "$ref": "#/components/parameters/purchase_order_unit_quantity"
+      },
+      "shipped_quantity": {
+        "$ref": "#/components/parameters/purchase_order_shipped_quantity"
+      },
+      "value": {
+        "$ref": "#/components/parameters/purchase_order_value"
+      },
+      "value_currency_code": {
+        "$ref": "#/components/parameters/purchase_order_value_currency_code"
+      }
+    },
+    "description": "The representation accepted for purchase order item creation in ISO."
+  },
+  "PurchaseOrderShipperOrder": {
+    "type": "object",
+    "properties": {
+      "purchase_order_id": {
+        "required": true,
+        "nullable": false,
+        "type": "string",
+        "description": "The ID of the purchase order associated to the shipper order."
+      },
+      "shipment_external_id": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external identifier the shipper uses to identify the shipment."
+      },
+      "shipper_order_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "Identifier for the segment of a purchase order associated with a shipment\""
+      },
+      "value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Value of items in shipment as part of the purchase order whole."
+      },
+      "value_currency_code": {
+        "type": "string",
+        "nullable": true,
+        "description": "Currency code for value field."
+      }
+    },
+    "description": "A collection of order data associated with an order's shipments."
+  },
+  "PurchaseOrderShipperOrderPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "purchase_order_id": {
+        "required": true,
+        "nullable": false,
+        "type": "string",
+        "description": "The ID of the purchase order associated to the shipper order."
+      },
+      "shipment_external_id": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external identifier the shipper uses to identify the shipment."
+      },
+      "shipper_order_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "Identifier for the segment of a purchase order associated with a shipment\""
+      },
+      "value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Value of items in shipment as part of the purchase order whole."
+      },
+      "value_currency_code": {
+        "type": "string",
+        "nullable": true,
+        "description": "Currency code for value field."
+      }
     }
+  },
+  "PurchaseOrderShipperOrderCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/PurchaseOrderShipperOrder"
+    }
+  },
+  "PurchaseOrderCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/PurchaseOrder"
+    }
+  },
+  "ReasonCode": {
+    "type": "object",
+    "properties": {
+      "exception_type": {
+        "type": "string",
+        "description": "The exception type the reason code should be applied to, if it occurred.\\\n            Example: 'late_delivery'."
+      },
+      "code": {
+        "type": "string",
+        "description": "The reason code to be applied if the exception type specified occurs."
+      }
+    },
+    "description": "Applicable reason code for the exception specified."
+  },
+  "Tender": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the tender."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the tender."
+      },
+      "carrier_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the carrier this tender was issued to."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this tender pertains to."
+      },
+      "lane_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the lane that this tender is associated to."
+      },
+      "sent_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the tender was sent to the carrier."
+      },
+      "responded_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the carrier responded to the tender."
+      },
+      "shipment_external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the shipment."
+      },
+      "shipment_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the shipment that this tender is associated to."
+      },
+      "status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "tender_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "sequence_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The ordinal number of the tender."
+      },
+      "rush": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is expedited."
+      },
+      "bid_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderBidStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "award_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderAwardStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "award_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the award that this tender is associated to."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "method": {
+        "type": "string",
+        "nullable": true,
+        "description": "Indicates the decision process or circumstances behind how the carrier was selected for the tender."
+      },
+      "legs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Leg"
+        }
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this shipment is associated with."
+      },
+      "multiple_stops": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
+      },
+      "region": {
+        "type": "string",
+        "nullable": true,
+        "description": "The region that this shipment is associated with."
+      },
+      "delivery_numbers": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "The delivery number."
+        },
+        "description": "The delivery numbers associated with this shipment."
+      }
+    },
+    "description": "An offer issued to a carrier to haul a shipment."
+  },
+  "TenderCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Tender"
+    }
+  },
+  "TenderPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the tender."
+      },
+      "carrier_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the carrier this tender was issued to."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this tender pertains to."
+      },
+      "lane_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the lane that this tender is associated to."
+      },
+      "sent_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the tender was sent to the carrier."
+      },
+      "responded_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the carrier responded to the tender."
+      },
+      "shipment_external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the shipment."
+      },
+      "status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "tender_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "sequence_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The ordinal number of the tender."
+      },
+      "rush": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is expedited."
+      },
+      "bid_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderBidStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "award_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TenderAwardStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "award_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the award that this tender is associated to."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "method": {
+        "type": "string",
+        "nullable": true,
+        "description": "Indicates the decision process or circumstances behind how the carrier was selected for the tender."
+      },
+      "legs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LegPostRequestBody"
+        }
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this shipment is associated with."
+      },
+      "multiple_stops": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
+      },
+      "region": {
+        "type": "string",
+        "nullable": true,
+        "description": "The region that this shipment is associated with."
+      },
+      "delivery_numbers": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "The delivery number."
+        },
+        "description": "The delivery numbers associated with this shipment."
+      },
+      "custom_data": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": true
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Arbitrary custom data to attach to the tender for analytical purposes."
+      },
+      "reporting_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date that the tender should be anchored to in the context of date-based searches."
+      }
+    },
+    "description": "The representation accepted for tender creation in ISO."
+  },
+  "Shipment": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the shipment."
+      },
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the shipment."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this shipment pertains to."
+      },
+      "tracking_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TrackingStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rush": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is expedited."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "legs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Leg"
+        }
+      },
+      "tenders": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UUID"
+        }
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this shipment is associated with."
+      },
+      "multiple_stops": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
+      },
+      "mode": {
+        "type": "string",
+        "nullable": true,
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ModeType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The mode of transportation utilized to transport the goods."
+      },
+      "equipment_type": {
+        "type": "string",
+        "nullable": true,
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/EquipmentType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Type of equipment required to carry the shipment."
+      },
+      "region": {
+        "type": "string",
+        "nullable": true,
+        "description": "The region that this shipment is associated with."
+      },
+      "delivery_numbers": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "The delivery number."
+        },
+        "description": "The delivery numbers associated with this shipment."
+      },
+      "linehaul_spend": {
+        "type": "number",
+        "nullable": true
+      },
+      "linehaul_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "planned_total_spend": {
+        "type": "number",
+        "nullable": true,
+        "description": "The contracted rate negotiated to deliver the shipment."
+      },
+      "planned_total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_spend_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "The final rate paid to deliver the shipment."
+      },
+      "total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_accessorial_value": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total value of all accessorials for this shipment."
+      },
+      "total_accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for total_accessorial_value."
+      },
+      "credit_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Total value for all credits for this shipment."
+      },
+      "credit_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "requested_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date that the consignee requests to receive the shipment. This is often the earliest ORAD of the purchase orders that the shipment fulfills. NB: This field is deprecated; this data should be specified on the requested_date field on the stop task.",
+        "deprecated": true
+      },
+      "planner_user_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the user that planned the shipment."
+      },
+      "confirmed_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to. NB: This field is deprecated; this data should be specified on the confirmed_date on the stop task.",
+        "deprecated": true
+      },
+      "fuel_surcharge_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Fuel surcharge accessorial cost"
+      },
+      "fuel_surcharge_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Fuel surcharge accessorial cost currency code"
+      },
+      "detention_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Detention cost (accessorial charge when driver is delayed)"
+      },
+      "detention_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for detention value"
+      },
+      "other_accessorial_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Other accessorial cost value"
+      },
+      "other_accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Other accessorial value currency code"
+      },
+      "customs_tax_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "All tax amounts (e.g. customs taxes) associated with movement of a shipment"
+      },
+      "customs_tax_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency for customs tax value"
+      },
+      "external_created_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "When was the shipment created in the partner system"
+      }
+    },
+    "description": "A shipment transporting goods for the shipper."
+  },
+  "ShipmentCollection": {
+    "type": "array",
+    "items": {
+      "$ref": "#/components/schemas/Shipment"
+    }
+  },
+  "ShipmentPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "external_id": {
+        "type": "string",
+        "description": "The external identifier that the shipper uses to identify the shipment."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this shipment pertains to."
+      },
+      "tracking_status": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TrackingStatus"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rush": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is expedited."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "mode": {
+        "type": "string",
+        "nullable": true,
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ModeType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The mode of transportation utilized to transport the goods."
+      },
+      "equipment_type": {
+        "type": "string",
+        "nullable": true,
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/EquipmentType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Type of equipment required to carry the shipment."
+      },
+      "legs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LegPostRequestBody"
+        }
+      },
+      "tenders": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UUID"
+        }
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this shipment is associated with."
+      },
+      "multiple_stops": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates whether the shipment is a multi-stop shipment (greater than two stops)."
+      },
+      "region": {
+        "type": "string",
+        "nullable": true,
+        "description": "The region that this shipment is associated with."
+      },
+      "delivery_numbers": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "description": "The delivery number."
+        },
+        "description": "The delivery numbers associated with this shipment."
+      },
+      "planner_user_name": {
+        "type": "string",
+        "description": "The full name of the user that planned the shipment (eg. \"John Smith\")."
+      },
+      "linehaul_spend": {
+        "type": "number",
+        "nullable": true
+      },
+      "linehaul_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "planned_total_spend": {
+        "type": "number",
+        "nullable": true,
+        "description": "The contracted rate negotiated to deliver the shipment."
+      },
+      "planned_total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_spend_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "The final rate paid to deliver the shipment."
+      },
+      "total_spend_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_accessorial_value": {
+        "type": "number",
+        "format": "float",
+        "nullable": true,
+        "description": "Total value of all accessorials for this shipment."
+      },
+      "total_accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for total_accessorial_value."
+      },
+      "requested_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date that the consignee requests to receive the shipment. This is often the earliest ORAD of the purchase orders that the shipment fulfills."
+      },
+      "confirmed_delivery_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
+      },
+      "custom_data": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": true
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Arbitrary custom data to attach to the shipment for analytical purposes."
+      },
+      "reporting_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date that the shipment should be anchored to in the context of date-based searches."
+      },
+      "fuel_surcharge_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Fuel surcharge accessorial cost"
+      },
+      "fuel_surcharge_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Fuel surcharge accessorial cost currency code"
+      },
+      "detention_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Detention cost (accessorial charge when driver is delayed)"
+      },
+      "detention_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency code for detention value"
+      },
+      "other_accessorial_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "Other accessorial cost value"
+      },
+      "other_accessorial_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Other accessorial value currency code"
+      },
+      "customs_tax_value": {
+        "type": "number",
+        "nullable": true,
+        "description": "All tax amounts (e.g. customs taxes) associated with movement of a shipment"
+      },
+      "customs_tax_currency_code": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Currency for customs tax value"
+      },
+      "external_created_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "When was the shipment created in the partner system"
+      }
+    },
+    "description": "The representation accepted for shipment creation in ISO."
+  },
+  "Leg": {
+    "type": "object",
+    "properties": {
+      "carrier_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the carrier this leg is associated with."
+      },
+      "start": {
+        "$ref": "#/components/schemas/Stop",
+        "description": "The stop that the leg begins with."
+      },
+      "end": {
+        "$ref": "#/components/schemas/Stop",
+        "description": "The stop that the leg ends with."
+      },
+      "distance": {
+        "type": "number",
+        "nullable": true,
+        "description": "The distance amount between the start and end stops."
+      },
+      "distance_unit": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DistanceUnit"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "consignee_pickup": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates if the leg was executed by a consignee's carrier."
+      }
+    },
+    "description": "A trip between two stops."
+  },
+  "LegPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "carrier_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the carrier this leg is associated with."
+      },
+      "carrier_external_id": {
+        "type": "string",
+        "nullable": true,
+        "description": "The unique identifier that the shipper uses to identify the carrier."
+      },
+      "start": {
+        "$ref": "#/components/schemas/Stop",
+        "description": "The stop that the leg begins with."
+      },
+      "end": {
+        "$ref": "#/components/schemas/Stop",
+        "description": "The stop that the leg ends with."
+      },
+      "distance": {
+        "type": "number",
+        "nullable": true,
+        "description": "The distance amount between the start and end stops."
+      },
+      "distance_unit": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DistanceUnit"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "consignee_pickup": {
+        "type": "boolean",
+        "nullable": true,
+        "description": "Indicates if the leg was executed by a consignee's carrier."
+      }
+    },
+    "description": "The representation accepted for leg creation in ISO."
+  },
+  "Stop": {
+    "type": "object",
+    "properties": {
+      "facility_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the facility where this stop occurs."
+      },
+      "facility_external_id": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external ID of the facility where this stop occurs."
+      },
+      "tasks": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/StopTask"
+        }
+      },
+      "original_scheduled_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The initial appointment scheduled for this stop."
+      },
+      "scheduled_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The final appointment scheduled for this stop."
+      },
+      "scheduled_appointment_started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The start of the final appointment window for this stop."
+      },
+      "scheduled_appointment_ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The end of the final appointment window for this stop."
+      },
+      "original_scheduled_appointment_started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The originally planned start of the appointment window for this stop."
+      },
+      "original_scheduled_appointment_ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The originally planned end of the appointment window for this stop."
+      },
+      "arrived_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the carrier arrived at the stop."
+      },
+      "departed_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the carrier departed the stop."
+      },
+      "departure_time_entered_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the shipper received the carrier departure date and time."
+      },
+      "buffered_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time of the buffer-adjusted appointment time for \"allowed lateness\"."
+      },
+      "estimated_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The estimated date of the of the pickup or delivery."
+      },
+      "reason_codes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ReasonCode"
+        },
+        "nullable": true,
+        "description": "Optional array of objects with reason code and exception type string combinations to indicate applicable reason codes for possible stop exceptions."
+      },
+      "sequence_number": {
+        "type": "integer",
+        "description": "The ordinal number of the stop."
+      },
+      "trailer_operation": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TrailerOperation"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trailer_operation_delay": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of seconds the carrier was delayed at a stop."
+      },
+      "appointment_created_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date & time when the appointment was scheduled."
+      }
+    },
+    "description": "A milestone along the transportation route where tasks are performed."
+  },
+  "StopPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "facility_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the facility where this stop occurs."
+      },
+      "facility_external_id": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external ID of the facility where this stop occurs."
+      },
+      "tasks": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/StopTaskPostRequestBody"
+        }
+      },
+      "original_scheduled_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The initial appointment scheduled for this stop."
+      },
+      "scheduled_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The final appointment scheduled for this stop."
+      },
+      "scheduled_appointment_started_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The start of the final appointment window for this stop."
+      },
+      "scheduled_appointment_ended_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The end of the final appointment window for this stop."
+      },
+      "arrived_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the carrier arrived at the stop."
+      },
+      "departed_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the carrier departed the stop."
+      },
+      "departure_time_entered_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time that the shipper received the carrier departure date and time."
+      },
+      "buffered_appointment_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The date and time of the buffer-adjusted appointment time for \"allowed lateness\"."
+      },
+      "estimated_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The estimated date of the of the pickup or delivery."
+      },
+      "sequence_number": {
+        "type": "integer",
+        "description": "The ordinal number of the stop."
+      },
+      "trailer_operation": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TrailerOperation"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trailer_operation_delay": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of seconds the carrier was delayed at a stop."
+      },
+      "reason_codes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ReasonCode"
+        },
+        "nullable": true,
+        "description": "Optional array of objects with reason code and exception type string combinations to indicate applicable reason codes for possible stop exceptions."
+      }
+    },
+    "description": "The representation accepted for stop creation in ISO."
+  },
+  "StopTask": {
+    "type": "object",
+    "properties": {
+      "business_entity_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the business that the task is being performed for."
+      },
+      "business_entity_type": {
+        "$ref": "#/components/schemas/BusinessEntityType",
+        "description": "The type of business that the task is being performed for."
+      },
+      "confirmed_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "This is based on the context of the task. For example, for a dropoff task, this is the confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The fulfillment strategy of the shipment."
+      },
+      "task_type": {
+        "$ref": "#/components/schemas/StopTaskType"
+      },
+      "purchase_order_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the purchase order associated to the task."
+      },
+      "purchase_order_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external ID of the purchase order associated to the task."
+      },
+      "requested_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "This is based on the context of the task. For example, for a dropoff task, this is the requested delivery date (RDD) for a shipment. This is generally the earliest ORAD of the purchase orders that the shipment fulfills."
+      }
+    },
+    "description": "An atomic action performed by the carrier at a stop."
+  },
+  "StopTaskPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "business_entity_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the business that the task is being performed for."
+      },
+      "business_entity_type": {
+        "$ref": "#/components/schemas/BusinessEntityType",
+        "description": "The type of business that the task is being performed for."
+      },
+      "confirmed_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "This is based on the context of the task. For example, for a dropoff task, this is the confirmed delivery date (CDD) for a shipment. This is generally set by the shipper, based on what they can commit to."
+      },
+      "fulfillment_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/FulfillmentType"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The fulfillment strategy of the shipment."
+      },
+      "task_type": {
+        "$ref": "#/components/schemas/StopTaskType"
+      },
+      "purchase_order_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the purchase order associated to the task."
+      },
+      "purchase_order_number": {
+        "type": "string",
+        "nullable": true,
+        "description": "The external ID of the purchase order associated to the task."
+      },
+      "requested_date": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "This is based on the context of the task. For example, for a dropoff task, this is the requested delivery date (RDD) for a shipment. This is generally the earliest ORAD of the purchase orders that the shipment fulfills."
+      }
+    },
+    "description": "The representation accepted for stop task creation in ISO."
+  },
+  "TenderType": {
+    "type": "string",
+    "enum": [
+      "CONTRACT",
+      "SPOT"
+    ],
+    "description": "Indicates whether the tender was for contract freight or the spot market."
+  },
+  "TenderStatus": {
+    "type": "string",
+    "enum": [
+      "CANCELLED",
+      "ACCEPTED",
+      "DECLINED",
+      "EXPIRED"
+    ],
+    "description": "Indicates the state of the tender."
+  },
+  "TenderAwardStatus": {
+    "type": "string",
+    "enum": [
+      "UNDER_COMMITTED",
+      "OVER_COMITTED"
+    ],
+    "description": "Indicates whether the tender was either under or over the award commitment."
+  },
+  "TenderBidStatus": {
+    "type": "string",
+    "enum": [
+      "SUBMITTED",
+      "UNSUBMITTED"
+    ],
+    "description": "Indicates whether the carrier submitted a spot bid for the tender."
+  },
+  "TrackingStatus": {
+    "type": "string",
+    "enum": [
+      "TRACKED",
+      "TRACKED_CONSISTENTLY",
+      "UNTRACKED"
+    ],
+    "description": "Indicates the tracking compliance for the shipment."
+  },
+  "ModeType": {
+    "type": "string",
+    "enum": [
+      "INTERMODAL",
+      "LESS_THAN_TRUCKLOAD",
+      "TRUCKLOAD",
+      "CUSTOMER_PICKUP",
+      "DRAYAGE",
+      "FLATBED",
+      "PARCEL",
+      "REFRIGERATED_TRUCKLOAD",
+      "TANKER"
+    ]
+  },
+  "EquipmentType": {
+    "type": "string",
+    "enum": [
+      "DRY_VAN",
+      "FLATBED",
+      "REFRIGERATED",
+      "CONTAINER",
+      "DRY_BULK_TANKER",
+      "POWER_ONLY",
+      "AUTO_CARRIER",
+      "STRAIGHT_BOX_TRUCK"
+    ]
+  },
+  "FulfillmentType": {
+    "type": "string",
+    "enum": [
+      "OUTBOUND",
+      "INBOUND",
+      "TRANSFER"
+    ],
+    "description": "Represents the type of fulfillment operation being performed."
+  },
+  "StopTaskType": {
+    "type": "string",
+    "enum": [
+      "PICKUP",
+      "DROPOFF"
+    ],
+    "description": "Indicates the type of task being performed at the stop."
+  },
+  "DistanceUnit": {
+    "type": "string",
+    "enum": [
+      "MILES",
+      "KILOMETERS"
+    ],
+    "description": "Represents a unit of distance measurement."
+  },
+  "TrailerOperation": {
+    "type": "string",
+    "enum": [
+      "LIVE",
+      "DROP"
+    ],
+    "description": "Indicates the type of loading or unloading operation being performed."
+  },
+  "Exception": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the exception."
+      },
+      "occurred_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the exception occurred."
+      },
+      "action_from": {
+        "$ref": "#/components/schemas/ExceptionActionFrom"
+      },
+      "rebuttal_outcome": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ExceptionRebuttalOutcome"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "status": {
+        "$ref": "#/components/schemas/ExceptionStatus"
+      },
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this exception is associated with."
+      },
+      "type": {
+        "$ref": "#/components/schemas/ExceptionType"
+      },
+      "exceptionable_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the resource this exception is associated with."
+      },
+      "exceptionable_type": {
+        "$ref": "#/components/schemas/ExceptionableType"
+      },
+      "consignee_id": {
+        "$ref": "#/components/schemas/UUID",
+        "nullable": true,
+        "description": "The ID of the consignee this exception is associated with."
+      },
+      "is_visible": {
+        "type": "boolean",
+        "description": "Indicates if this exception is visible in ISO."
+      },
+      "is_rebuttable": {
+        "type": "boolean",
+        "description": "Indicates if this exception can be rebutted."
+      },
+      "responsible_party_type": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ResponsiblePartyType"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "responsible_party_id": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/UUID"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The ID of the business deemed at fault for the exception."
+      },
+      "week_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the week that this exception pertains to."
+      },
+      "region": {
+        "type": "string",
+        "nullable": true,
+        "description": "The region that this exception is associated with."
+      }
+    },
+    "description": "An SLA violation between two parties."
+  },
+  "ExceptionCollection": {
+    "type": "array",
+    "items": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/TenderException"
+        },
+        {
+          "$ref": "#/components/schemas/ShipmentException"
+        },
+        {
+          "$ref": "#/components/schemas/StopException"
+        },
+        {
+          "$ref": "#/components/schemas/PurchaseOrderException"
+        }
+      ]
+    }
+  },
+  "TenderException": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Exception"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "An SLA violation related to a tender."
+  },
+  "ShipmentException": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Exception"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "An SLA violation related to a shipment."
+  },
+  "StopException": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Exception"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "shipment_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the shipment this exception is associated with."
+          },
+          "stop_sequence_number": {
+            "type": "integer",
+            "description": "The ordinal number of the stop."
+          },
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "An SLA violation related to a specific stop for shipment."
+  },
+  "PurchaseOrderException": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/Exception"
+      }
+    ],
+    "description": "An SLA violation related to a purchase order."
+  },
+  "ExceptionPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "report_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report that this exception is associated with."
+      },
+      "type": {
+        "$ref": "#/components/schemas/ExceptionType"
+      },
+      "exceptionable_type": {
+        "$ref": "#/components/schemas/ExceptionableType"
+      },
+      "consignee_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the consignee this exception is associated with."
+      },
+      "occurred_at": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The Date/Time the exception occurred at."
+      }
+    }
+  },
+  "TenderExceptionPostRequestBody": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ExceptionPostRequestBody"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exceptionable_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the tender this exception is associated with."
+          },
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "The representation accepted for tender exception creation in ISO."
+  },
+  "ShipmentExceptionPostRequestBody": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ExceptionPostRequestBody"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "exceptionable_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the shipment this exception is associated with."
+          },
+          "leg_sequence_number": {
+            "type": "integer",
+            "nullable": true,
+            "description": "The ordinal number of the leg."
+          },
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "The representation accepted for shipment exception creation in ISO."
+  },
+  "StopExceptionPostRequestBody": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ExceptionPostRequestBody"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "shipment_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the shipment this exception is associated with."
+          },
+          "shipment_external_id": {
+            "type": "string",
+            "description": "The external ID of the shipment this exception is associated with."
+          },
+          "stop_sequence_number": {
+            "type": "integer",
+            "description": "The ordinal number of the stop."
+          },
+          "carrier_id": {
+            "$ref": "#/components/schemas/UUID",
+            "description": "The ID of the carrier this exception is associated with."
+          }
+        }
+      }
+    ],
+    "description": "The representation accepted for stop exception creation in ISO."
+  },
+  "PurchaseOrderExceptionPostRequestBody": {
+    "allOf": [
+      {
+        "$ref": "#/components/schemas/ExceptionPostRequestBody"
+      }
+    ],
+    "type": "object",
+    "properties": {
+      "exceptionable_id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the purchase order this exception is associated with."
+      }
+    },
+    "description": "The representation accepted for purchase order exception creation in ISO."
+  },
+  "ExceptionType": {
+    "type": "string",
+    "description": "Represents the type (classification) of the exception."
+  },
+  "ExceptionActionFrom": {
+    "type": "string",
+    "enum": [
+      "CARRIER",
+      "SHIPPER"
+    ],
+    "description": "Indicates the party currently responsible for the next action during the exception rebuttal process."
+  },
+  "ExceptionRebuttalOutcome": {
+    "type": "string",
+    "enum": [
+      "ACCEPTED",
+      "DECLINED",
+      "FORGIVEN"
+    ],
+    "description": "Indicates the outcome of the exception rebuttal process."
+  },
+  "ExceptionStatus": {
+    "type": "string",
+    "enum": [
+      "NEW",
+      "REVIEW",
+      "RESOLVED"
+    ],
+    "description": "Indicates the current state of the exception."
+  },
+  "ExceptionableType": {
+    "type": "string",
+    "enum": [
+      "TENDER",
+      "SHIPMENT",
+      "STOP",
+      "PURCHASE_ORDER"
+    ],
+    "description": "Represents the type of resource the exception occurred for."
+  },
+  "ResponsiblePartyType": {
+    "type": "string",
+    "enum": [
+      "CARRIER",
+      "CONSIGNEE",
+      "SHIPPER",
+      "OTHER"
+    ],
+    "description": "Indicates the party deemed at fault for the exception."
+  },
+  "ReportError": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report error."
+      },
+      "row_number": {
+        "type": "integer",
+        "description": "The row number in the report that experienced the error."
+      },
+      "row_data": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "The parsed data for the row that encountered an error."
+      },
+      "error": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/AuthenticationError"
+          },
+          {
+            "$ref": "#/components/schemas/NotFoundError"
+          },
+          {
+            "$ref": "#/components/schemas/ConflictingCreationError"
+          },
+          {
+            "$ref": "#/components/schemas/RateLimitExceededError"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidQueryParameterError"
+          },
+          {
+            "$ref": "#/components/schemas/StaleUpdateError"
+          },
+          {
+            "$ref": "#/components/schemas/ForbiddenError"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceInvalidError"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidRequestError"
+          }
+        ],
+        "description": "The error that was encountered for the row."
+      }
+    },
+    "description": "An error encountered when processing a report."
+  },
+  "ReportErrorPostRequestBody": {
+    "type": "object",
+    "properties": {
+      "row_number": {
+        "type": "integer",
+        "description": "The row number in the report that experienced the error."
+      },
+      "row_data": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "The parsed data for the row that encountered an error."
+      },
+      "error": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/AuthenticationError"
+          },
+          {
+            "$ref": "#/components/schemas/NotFoundError"
+          },
+          {
+            "$ref": "#/components/schemas/ConflictingCreationError"
+          },
+          {
+            "$ref": "#/components/schemas/RateLimitExceededError"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidQueryParameterError"
+          },
+          {
+            "$ref": "#/components/schemas/StaleUpdateError"
+          },
+          {
+            "$ref": "#/components/schemas/ForbiddenError"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceInvalidError"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidRequestError"
+          }
+        ],
+        "description": "The error that was encountered for the row."
+      }
+    },
+    "description": "The representation accepted for report error creation in ISO."
+  },
+  "ReportStatus": {
+    "type": "string",
+    "enum": [
+      "UPLOADED",
+      "PROCESSING",
+      "PROCESSED",
+      "DELETING"
+    ],
+    "description": "Indicates the current state of the report."
+  },
+  "Report": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "$ref": "#/components/schemas/UUID",
+        "description": "The ID of the report."
+      },
+      "status": {
+        "$ref": "#/components/schemas/ReportStatus"
+      },
+      "uploaded_at": {
+        "$ref": "#/components/schemas/DateTime",
+        "description": "The date and time that the report was uploaded."
+      },
+      "filename": {
+        "type": "string",
+        "nullable": true,
+        "description": "The filename of the file provided for the report."
+      },
+      "eligible_rows": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of rows eligible for processing."
+      },
+      "total_rows": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The total number of rows provided in the file."
+      },
+      "processed_rows": {
+        "type": "integer",
+        "nullable": true,
+        "description": "The number of rows currently processed for the file."
+      },
+      "percentage_complete": {
+        "type": "number",
+        "description": "The percentage indicating the processing progress."
+      }
+    },
+    "description": "A file containing transportation data to be processed by ISO."
   }
-
+}

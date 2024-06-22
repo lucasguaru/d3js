@@ -84,3 +84,14 @@ const fileIsoOSSData = [
 "Header Volume Confirmed Quantity",
 "Original Order Quantity"
 ]
+
+// Use to convert the fileIsoOSSData to json
+// This was necessary to have an id when asking chatGPT to correlate the fields with api.
+//
+// let idCount = 3;
+// let fileIsoOSSDataObj = fileIsoOSSData.map(item => {
+//     return {
+//         name: item,
+//         id: idCount++
+//     }
+// })

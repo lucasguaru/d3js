@@ -5,12 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drawio generator</title>
+    <script>
+        function scapeValue(value) {
+            if (!value) return ""
+            return value.replaceAll('&', '&amp;amp;').replaceAll("\"", "'")
+            // return value.replaceAll('&', '&amp;amp;').replaceAll("\"", "&quot;")
+        }
+    </script>
     <script src="js/file/fileIsoCustomerScoreCardData.js"></script>
-    <script src="js/file/fileIsoOSSData.js"></script>
+    <script src="js/file/fileIsoOSSDataObj.js"></script>
+    <script src="js/connections/connections.js"></script>
 
-    <script src="js/api/purchaseOrderApi.js"></script>
+    <script src="js/api/allApis.js"></script>
     <script src="js/createFile.js"></script>
     <script src="js/createApi.js"></script>
+    <script src="js/createConnections.js"></script>
     <script src="js/app.js"></script>
     <style>
         body {
@@ -52,30 +61,40 @@
 </head>
 
 <body>
-    <button class="button button1" onclick="copyFileIsoCustomerScoreCardData()">Copy File Iso Customer ScoreCard
-        Data</button>
-    <button class="button button1" onclick="copyFileIsoOSSData()">Copy File Iso OSS Data</button>
-    <button class="button button2" onclick="copyApiPurchaseOrder()">Copy Purchase Order Api</button>
+
+    <button class="button button2" onclick="copyEverything()">Copy Everything</button>
 
     <script>
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function () {
-                alert('Copied to clipboard: ' + text);
+                // alert('Copied to clipboard: ' + text);
             }, function (err) {
                 console.error('Could not copy text: ', err);
             });
         }
 
-        function copyFileIsoCustomerScoreCardData() {
-            copyToClipboard(createFile('ISO - Customer Scorecard Data', fileIsoCustomerScoreCardData))
+        function copyEverything() {
+            copyToClipboard(createAll())
         }
 
-        function copyFileIsoOSSData() {
-            copyToClipboard(createFile('ISO - OSS Data', fileIsoOSSData))
-        }
+        function createAll() {
+            let fileResult = createFile('ISO - OSS Data', fileIsoOSSDataObj)
+            let apiResult = createAllApis(allApis)
+            // let apiResult = createAllApis([apiItems[0]])
+            let fullResult = `<mxGraphModel>
+    <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+${fileResult}
 
-        function copyApiPurchaseOrder() {
-            copyToClipboard(createApi('PurchaseOrder', purchaseOrderApi))
+
+
+${apiResult}
+    </root>
+</mxGraphModel>`
+
+            // console.log('fullResult', fullResult)
+            return fullResult
         }
 
     </script>
