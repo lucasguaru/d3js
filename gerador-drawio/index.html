@@ -58,14 +58,39 @@
         .button2:hover {
             background-color: #45a049;
         }
+        #gen-drawio {
+            margin-right: 100px;
+        }
+        #gen-table {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
-
-    <button class="button button2" onclick="copyEverything()">Copy Everything</button>
+    <div id="gen-drawio"><button class="button button2" onclick="copyEverything()">Copy Everything</button></div>
+    <div id="gen-table">
+        <input type="text" name="tableName" id="tableName" value="Purchase Order">
+        <textarea name="tableFields" id="tableFields" rows="20" cols="30">YEAR
+WEEK
+DOMAIN_NAME
+SHIPMENT_GID
+PO_NUMBER</textarea>
+<div>
+    <button class="button button1" onclick="genTableDrawIO()">Generate Table for DrawIO</button>
+</div>
+    </div>
 
     <script>
+        function $(id) {
+            return document.getElementById(id)
+        }
+         function genTableDrawIO() {
+            let fields = $('tableFields').value.split("\n").map(item => item.trim()).filter(item => item)
+            let tableResult = createFile($('tableName').value, fields)
+            let result = createAll(tableResult)
+            copyToClipboard(result)
+        }
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function () {
                 // alert('Copied to clipboard: ' + text);
@@ -75,22 +100,21 @@
         }
 
         function copyEverything() {
-            copyToClipboard(createAll())
+            let fileResult = createFile('ISO - OSS Data', fileIsoOSSDataObj)
+            let apiResult = createAllApis(allApis)
+            // let result = createAll(apiResult)
+            let result = createAll(fileResult, apiResult)
+            copyToClipboard(result)
         }
 
         function createAll() {
-            let fileResult = createFile('ISO - OSS Data', fileIsoOSSDataObj)
-            let apiResult = createAllApis(allApis)
-            // let apiResult = createAllApis([apiItems[0]])
+            let content = Array.from(arguments).join("\n\n\n")
+
             let fullResult = `<mxGraphModel>
     <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-${fileResult}
-
-
-
-${apiResult}
+${content}
     </root>
 </mxGraphModel>`
 

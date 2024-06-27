@@ -19,9 +19,9 @@ function createField(apiName, items, x, parentName = "") {
         const fieldScaped = scapeValue(parentName + field.fieldName)
         const descScaped = scapeValue(field.description)
         let style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;"'
-        if (connectionsData.find(conn => conn.to.id == id)) {
-            style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=70;"'
-        }
+        // if (connectionsData.find(conn => conn.to.id == id)) {
+        //     style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=70;"'
+        // }
         return `
         <UserObject label="${fieldScaped}" tooltip="${descScaped}" tags="Api${apiName}" id="${id}">
             <mxCell ${style} vertex="1" parent="1">
@@ -103,6 +103,7 @@ function createAllApis(items) {
         // Create the Header sending the fields string assembled
         apiResult += createMxGraphModel(item.id, apiName, fieldResult, apiCoord.x, apiCoord.y)
 
+        // Create the connections
         let filteredConnections = connectionsData.filter(connection => connection.to.parent.startsWith(apiName))
         apiResult += createConnections(filteredConnections)
 
