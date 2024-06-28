@@ -7,12 +7,14 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 1001,
                 "type": "string",
+                "required": true,
                 "description": "The unique identifier that the shipper uses to identify the consignee."
             },
             {
                 "fieldName": "business_name",
                 "id": 1002,
                 "type": "string",
+                "required": true,
                 "description": "The name of the consignee company."
             },
             {
@@ -61,30 +63,35 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 2001,
                 "type": "string",
+                "required": true,
                 "description": "The unique identifier that the shipper uses to identify the facility."
             },
             {
                 "fieldName": "name",
                 "id": 2002,
                 "type": "string",
+                "required": true,
                 "description": "The name that the shipper uses to identify the facility."
             },
             {
                 "fieldName": "business_entity_id",
                 "id": 2003,
                 "type": "UUID",
+                "requiredFor201": true,
                 "description": "The ID of the business that operates out of the facility."
             },
             {
                 "fieldName": "business_entity_type",
                 "id": 2004,
                 "type": "BusinessEntityType",
+                "requiredFor201": true,
                 "description": "The type of the business entity that operates out of the facility."
             },
             {
                 "fieldName": "raw_address",
                 "id": 2005,
                 "type": "string",
+                "required": true,
                 "description": "The textual representation of the complete address for the facility."
             },
             {
@@ -103,6 +110,7 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 3001,
                 "type": "string",
+                "required": true,
                 "description": "The unique identifier that the shipper uses to identify the lane."
             }
         ]
@@ -115,18 +123,21 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 4001,
                 "type": "string",
+                "required": true,
                 "description": "The external identifier (PO number) that the shipper and consignee uses to identify the purchase order."
             },
             {
                 "fieldName": "consignee_id",
                 "id": 4002,
                 "type": "UUID",
+                "required": true,
                 "description": "The ID of the consignee this purchase order is associated with."
             },
             {
                 "fieldName": "week_id",
                 "id": 4003,
                 "type": "UUID",
+                "required": true,
                 "description": "The ID of the week that this purchase order pertains to."
             },
             {
@@ -139,36 +150,42 @@ const allApis = [
                 "fieldName": "original_requested_arrival_at",
                 "id": 4005,
                 "type": "DateTime",
+                "required": true,
                 "description": "The date and time that the consignee requests to receive the purchase order."
             },
             {
                 "fieldName": "unit_type",
                 "id": 4006,
                 "type": "string",
+                "required": true,
                 "description": "The type of packaging units comprised by the purchase order."
             },
             {
                 "fieldName": "unit_quantity",
                 "id": 4007,
                 "type": "integer",
+                "required": true,
                 "description": "The amount packaging units comprised by the purchase order."
             },
             {
                 "fieldName": "shipped_quantity",
                 "id": 4008,
                 "type": "number",
+                "required": true,
                 "description": "The amount packaging units that were actually shipped."
             },
             {
                 "fieldName": "value",
                 "id": 4009,
                 "type": "number",
+                "required": true,
                 "description": "The monetary value of the purchase order."
             },
             {
                 "fieldName": "value_currency_code",
                 "id": 4010,
                 "type": "CurrencyCode",
+                "required": true,
                 "description": "The currency code of monetary value of the purchase order."
             },
             {
@@ -241,6 +258,7 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 5001,
                 "type": "string",
+                "required": true,
                 "description": "The external identifier that the shipper uses to identify the shipment."
             },
             {
@@ -286,12 +304,15 @@ const allApis = [
                         "fieldName": "carrier_id",
                         "id": 5009,
                         "type": "UUID",
+                        "required": true,
+                        "ref": "Carrier",
                         "description": "The ID of the carrier this leg is associated with."
                     },
                     {
                         "fieldName": "carrier_external_id",
                         "id": 5010,
                         "type": "string",
+                        "required": true,
                         "description": "The unique identifier that the shipper uses to identify the carrier."
                     },
                     {
@@ -304,12 +325,15 @@ const allApis = [
                                 "fieldName": "facility_id",
                                 "id": 5012,
                                 "type": "UUID",
+                                "required": true,
+                                "ref": "Facility",
                                 "description": "The ID of the facility where this stop occurs."
                             },
                             {
                                 "fieldName": "facility_external_id",
                                 "id": 5013,
                                 "type": "string",
+                                "required": true,
                                 "description": "The external ID of the facility where this stop occurs."
                             },
                             {
@@ -350,12 +374,14 @@ const allApis = [
                                         "fieldName": "purchase_order_id",
                                         "id": 5020,
                                         "type": "UUID",
+                                        "required": true,
                                         "description": "The ID of the purchase order associated to the task."
                                     },
                                     {
                                         "fieldName": "purchase_order_number",
                                         "id": 5021,
                                         "type": "string",
+                                        "required": true,
                                         "description": "The external ID of the purchase order associated to the task."
                                     },
                                     {
@@ -406,18 +432,21 @@ const allApis = [
                                 "fieldName": "arrived_at",
                                 "id": 5029,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The date and time that the carrier arrived at the stop."
                             },
                             {
                                 "fieldName": "departed_at",
                                 "id": 5030,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The date and time that the carrier departed the stop."
                             },
                             {
                                 "fieldName": "departure_time_entered_at",
                                 "id": 5031,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The date and time that the shipper received the carrier departure date and time."
                             },
                             {
@@ -456,11 +485,13 @@ const allApis = [
                                 "fieldName": "sequence_number",
                                 "id": 5037,
                                 "type": "integer",
+                                "required": true,
                                 "description": "The ordinal number of the stop."
                             },
                             {
                                 "fieldName": "trailer_operation",
                                 "id": 5038,
+                                "required": true,
                                 "type": "TrailerOperation"
                             },
                             {
@@ -487,12 +518,15 @@ const allApis = [
                                 "fieldName": "facility_id",
                                 "id": 5042,
                                 "type": "UUID",
+                                "required": true,
+                                "ref": "Facility",
                                 "description": "The ID of the facility where this stop occurs."
                             },
                             {
                                 "fieldName": "facility_external_id",
                                 "id": 5043,
                                 "type": "string",
+                                "required": true,
                                 "description": "The external ID of the facility where this stop occurs."
                             },
                             {
@@ -504,12 +538,14 @@ const allApis = [
                                         "fieldName": "business_entity_id",
                                         "id": 5045,
                                         "type": "UUID",
+                                        "required": true,
                                         "description": "The ID of the business that the task is being performed for."
                                     },
                                     {
                                         "fieldName": "business_entity_type",
                                         "id": 5046,
                                         "type": "BusinessEntityType",
+                                        "required": true,
                                         "description": "The type of business that the task is being performed for."
                                     },
                                     {
@@ -527,24 +563,28 @@ const allApis = [
                                     {
                                         "fieldName": "task_type",
                                         "id": 5049,
+                                        "required": true,
                                         "type": "StopTaskType"
                                     },
                                     {
                                         "fieldName": "purchase_order_id",
                                         "id": 5050,
                                         "type": "UUID",
+                                        "required": true,
                                         "description": "The ID of the purchase order associated to the task."
                                     },
                                     {
                                         "fieldName": "purchase_order_number",
                                         "id": 5051,
                                         "type": "string",
+                                        "required": true,
                                         "description": "The external ID of the purchase order associated to the task."
                                     },
                                     {
                                         "fieldName": "requested_date",
                                         "id": 5052,
                                         "type": "Date",
+                                        "required": true,
                                         "description": "This is based on the context of the task. For example, for a dropoff task, this is the requested delivery date (RDD) for a shipment. This is generally the earliest ORAD of the purchase orders that the shipment fulfills."
                                     }
                                 ]
@@ -565,12 +605,14 @@ const allApis = [
                                 "fieldName": "scheduled_appointment_started_at",
                                 "id": 5055,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The start of the final appointment window for this stop."
                             },
                             {
                                 "fieldName": "scheduled_appointment_ended_at",
                                 "id": 5056,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The end of the final appointment window for this stop."
                             },
                             {
@@ -589,12 +631,14 @@ const allApis = [
                                 "fieldName": "arrived_at",
                                 "id": 5059,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The date and time that the carrier arrived at the stop."
                             },
                             {
                                 "fieldName": "departed_at",
                                 "id": 5060,
                                 "type": "DateTime",
+                                "required": true,
                                 "description": "The date and time that the carrier departed the stop."
                             },
                             {
@@ -639,11 +683,13 @@ const allApis = [
                                 "fieldName": "sequence_number",
                                 "id": 5067,
                                 "type": "integer",
+                                "required": true,
                                 "description": "The ordinal number of the stop."
                             },
                             {
                                 "fieldName": "trailer_operation",
                                 "id": 5068,
+                                "required": true,
                                 "type": "TrailerOperation"
                             },
                             {
@@ -683,6 +729,7 @@ const allApis = [
                 "fieldName": "tenders",
                 "id": 5074,
                 "type": "array",
+                "required": true,
                 "child": "string"
             },
             {
@@ -718,11 +765,13 @@ const allApis = [
             {
                 "fieldName": "linehaul_spend",
                 "id": 5080,
+                "required": true,
                 "type": "number"
             },
             {
                 "fieldName": "linehaul_spend_currency_code",
                 "id": 5081,
+                "required": true,
                 "type": "CurrencyCode"
             },
             {
@@ -847,18 +896,23 @@ const allApis = [
                 "fieldName": "external_id",
                 "id": 6001,
                 "type": "string",
+                "required": true,
                 "description": "The external identifier that the shipper uses to identify the tender."
             },
             {
                 "fieldName": "carrier_id",
                 "id": 6002,
                 "type": "UUID",
+                "required": true,
+                "ref": "Carrier",
                 "description": "The ID of the carrier this tender was issued to."
             },
             {
                 "fieldName": "week_id",
                 "id": 6003,
                 "type": "UUID",
+                "required": true,
+                "ref": "Week",
                 "description": "The ID of the week that this tender pertains to."
             },
             {

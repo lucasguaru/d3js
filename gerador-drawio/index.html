@@ -21,7 +21,9 @@
     <script src="js/createFile.js"></script>
     <script src="js/createApi.js"></script>
     <script src="js/createConnections.js"></script>
+    <script src="js/mapping.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/file-helper.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,12 +66,28 @@
         #gen-table {
             display: block;
         }
+        .clickable {
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
     <div id="gen-drawio"><button class="button button2" onclick="copyEverything()">Copy Everything</button></div>
-    <div id="gen-table">
+    <div>
+        Upload Data File:
+        <input type="file" id="datFileInput" accept=".csv" multiple>
+    <p id="fileName"></p>
+    <button class="button button1" onclick="genDrawIO()" style="display: none;">Generate Table for DrawIeO</button>
+    </div>
+    <!-- <div>
+        Upload Mapping File:
+        <input type="file" id="mapFileInput" accept=".csv">
+    <p id="mappingFileName"></p> -->
+    <input type="checkbox" name="ignoreUnrelatedFields" id="ignoreUnrelatedFields" value="Y" checked><label class="clickable" for="ignoreUnrelatedFields"> Ignore Unrelated Fields </label>
+    <button class="button button1" onclick="genDrawIO()">Generate Table for DrawIO</button>
+    </div>
+    <div id="gen-table" style="display: none;">
         <input type="text" name="tableName" id="tableName" value="Purchase Order">
         <textarea name="tableFields" id="tableFields" rows="20" cols="30">YEAR
 WEEK
@@ -85,6 +103,34 @@ PO_NUMBER</textarea>
         function $(id) {
             return document.getElementById(id)
         }
+
+        // *** Start - Read CSV from input
+
+        const csvFiles = [];
+        let mapFile = null;
+
+        document.getElementById('datFileInput').addEventListener('change', addDataFilesListener);
+        // document.getElementById('mapFileInput').addEventListener('change', addMapFileListener);
+
+        // *** End - Read CSV from input
+
+        function genDrawIO() {
+            if (csvFiles.length && mapFile) { // && mapFile
+                let connectionMap = new Mapping(mapFile)
+                let filesResult = ''
+                restartFileVariables()
+                let ignoreUnrelatedFields = $('ignoreUnrelatedFields').checked
+                csvFiles.forEach(csvFile => {
+                    filesResult += createFile(csvFile.fileName, Object.keys(csvFile.fileContent[0]), connectionMap, ignoreUnrelatedFields)
+                })
+                let apiResult = createAllApis(allApis, connectionMap, ignoreUnrelatedFields)
+                let result = createAll(filesResult, apiResult, connectionMap)
+                copyToClipboard(result)
+            } else {
+                alert('Select Data and Map Files')
+            }
+        }
+
          function genTableDrawIO() {
             let fields = $('tableFields').value.split("\n").map(item => item.trim()).filter(item => item)
             let tableResult = createFile($('tableName').value, fields)
