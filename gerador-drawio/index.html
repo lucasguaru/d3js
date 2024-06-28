@@ -8,7 +8,7 @@
     <script>
         function scapeValue(value) {
             if (!value) return ""
-            return value.replaceAll('&', '&amp;amp;').replaceAll("\"", "'")
+            return String(value).replaceAll('&', '&amp;amp;').replaceAll("\"", "'")
             // return value.replaceAll('&', '&amp;amp;').replaceAll("\"", "&quot;")
         }
     </script>
@@ -114,6 +114,10 @@ PO_NUMBER</textarea>
 
         // *** End - Read CSV from input
 
+        // const LINE_BREAK = '%26%2310%3B'
+        const LINE_BREAK = '&#10;'
+        // %26%2310%3B
+
         function genDrawIO() {
             if (csvFiles.length && mapFile) { // && mapFile
                 let connectionMap = new Mapping(mapFile)
@@ -121,7 +125,16 @@ PO_NUMBER</textarea>
                 restartFileVariables()
                 let ignoreUnrelatedFields = $('ignoreUnrelatedFields').checked
                 csvFiles.forEach(csvFile => {
-                    filesResult += createFile(csvFile.fileName, Object.keys(csvFile.fileContent[0]), connectionMap, ignoreUnrelatedFields)
+                    let fields = {
+                        fieldNames: Object.keys(csvFile.fileContent[0]),
+                        examples: {}
+                    }
+                    fields.fieldNames.forEach(field => {
+                        let examples = 'Examples:' + LINE_BREAK
+                        examples += csvFile.fileContent.map(line => scapeValue(line[field])).join(LINE_BREAK)
+                        fields.examples[field] = examples
+                    })
+                    filesResult += createFile(csvFile.fileName, fields, connectionMap, ignoreUnrelatedFields)
                 })
                 let apiResult = createAllApis(allApis, connectionMap, ignoreUnrelatedFields)
                 let result = createAll(filesResult, apiResult, connectionMap)

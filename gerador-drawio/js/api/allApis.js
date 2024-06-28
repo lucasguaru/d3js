@@ -265,6 +265,7 @@ const allApis = [
                 "fieldName": "week_id",
                 "id": 5002,
                 "type": "UUID",
+                "required": true,
                 "description": "The ID of the week that this shipment pertains to."
             },
             {
@@ -1491,6 +1492,18 @@ const allApis = [
                 "id": 8005,
                 "type": "string",
                 "description": "Currency code for value field."
+            }
+        ]
+    },
+    {
+        "entity": "Carrier",
+        "id": 9000,
+        "fields": [
+            {
+                "fieldName": "external_id",
+                "id": 9002,
+                "type": "string",
+                "description": " The unique identifier that the shipper uses to identify the carrier."
             }
         ]
     }

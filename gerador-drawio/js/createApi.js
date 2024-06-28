@@ -39,6 +39,11 @@ function createField(apiName, items, x, parentName = "", connectionMap, ignoreUn
             } else {
                 return ""
             }
+        } else {
+            if (connectionMap.apiHasThisField(apiName, parentName, field, id, true)) {
+                // connectionMap.addApiMappingField(apiName, parentName, field, id)
+                style = styleIsMapped
+            }
         }
 
         // if (connectionsData.find(conn => conn.to.id == id)) {
@@ -68,6 +73,7 @@ function createField(apiName, items, x, parentName = "", connectionMap, ignoreUn
 const entityCoord = {
     "Lane": { x: 490, y: 80},
     "PurchaseOrderShipperOrder": { x: 810, y: 80},
+    "Carrier": { x: 1130, y: 80},
     "Consignee": { x: 490, y: 320},
     "Facility": { x: 810, y: 320},
     "Week": { x: 1130, y: 320},
@@ -81,6 +87,7 @@ const apiOrder = {
     "PurchaseOrder": 1,
     "Week": 2,
     "PurchaseOrderShipperOrder": 3,
+    "Carrier": 3,
     "Lane": 4,
     "Facility": 5,
     "Consignee": 6,

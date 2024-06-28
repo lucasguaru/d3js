@@ -13,7 +13,8 @@ function isMappingFile(jsonFile) {
 
 function addDataFilesListener(event) {
     const files = event.target.files;
-    const linesToRead = 30;
+    const linesToRead = 300;
+    const linesToReturn = 20;
 
     if (files.length) {
         for (let i = 0; i < files.length; i++) {
@@ -33,7 +34,7 @@ function addDataFilesListener(event) {
                 } else {
                     csvFiles.push({
                         fileName: fileName,
-                        fileContent: jsonFile,
+                        fileContent: jsonFile.slice(0, linesToReturn),
                     })
                 }
                 if (mapFile) {
@@ -96,7 +97,9 @@ function csvToJson(lines) {
         obj["_id"] = i
 
         for (let j = 0; j < headers.length; j++) {
-            obj[headers[j].trim()] = currentline[j].trim();
+            if (j < currentline.length) {
+                obj[headers[j].trim()] = currentline[j].trim();
+            }
         }
         result.push(obj);
     }

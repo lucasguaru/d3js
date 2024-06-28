@@ -6,19 +6,20 @@ function restartFileVariables() {
     drawIOIdStart = 5;
     fileYStart = 680;
 }
-function createFile(fileName, fieldNames, connectionMap, ignoreUnrelatedFields) {
+function createFile(fileName, fields, connectionMap, ignoreUnrelatedFields) {
     let tagName = fileName.replaceAll(" ", "")
     
-    const createMxCell = (item) => {
+    const createMxCell = (item, examples) => {
         let isObject = typeof item == 'object'
         const fieldScaped = scapeValue(isObject ? item.name : item)
         let id = isObject ? item.id : drawIOIdStart++
+        let fieldNameLower = fileName.toLowerCase()
 
         let style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;"'
-        if (connectionMap.fileHasThisField(fileName, item)) {
+        if (connectionMap.fileHasThisField(fieldNameLower, item)) {
         // if (isObject && connectionsData.find(conn => conn.from.id == item.id)) {
             style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#cce5ff;strokeColor=#36393d;opacity=50;"'
-            connectionMap.addFileMappingField(fileName, item, id)
+            connectionMap.addFileMappingField(fieldNameLower, item, id)
         } else if (ignoreUnrelatedFields) {
             // skip
             return ""
@@ -27,7 +28,7 @@ function createFile(fileName, fieldNames, connectionMap, ignoreUnrelatedFields) 
         let y = fileYStart
         fileYStart += fileFieldYIncrement
         return `
-        <UserObject label="${fieldScaped}" tags="${tagName}" id="${id}">
+        <UserObject label="${fieldScaped}" tags="${tagName}" tooltip="${examples}" id="${id}">
             <mxCell ${style} vertex="1" parent="1">
                 <mxGeometry x="100" y="${y}" width="200" height="20" as="geometry"/>
             </mxCell>
@@ -49,18 +50,18 @@ function createFile(fileName, fieldNames, connectionMap, ignoreUnrelatedFields) 
     const avoidFields = ["_id"]
 
     // Sort to have the fields that are mapped as first items
-    fieldNames = fieldNames.sort((fieldA, fieldB) => {
-        if (connectionMap.fileHasThisField(fileName, fieldA)) {
+    fields.fieldNames = fields.fieldNames.sort((fieldA, fieldB) => {
+        if (connectionMap.fileHasThisField(fileName.toLowerCase(), fieldA)) {
             return -1
         }
-        if (connectionMap.fileHasThisField(fileName, fieldB)) {
+        if (connectionMap.fileHasThisField(fileName.toLowerCase(), fieldB)) {
             return 1
         }
         return 0
     })
-    fieldNames.forEach((fieldName) => {
+    fields.fieldNames.forEach((fieldName) => {
         if (!avoidFields.includes(fieldName)) {
-            fieldsResult += createMxCell(fieldName);
+            fieldsResult += createMxCell(fieldName, fields.examples[fieldName]);
         }
     });
 

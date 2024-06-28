@@ -17,20 +17,23 @@ const API_FIELD = 'ISO API Field Name'
 function Mapping(mapFile) {
     this.rawMapFile = mapFile
     this.mapFields = mapFile.fileContent
-        .filter(line => line[FILE_NAME] && line[FILE_FIELD])
-        .map(line => {
-            return {
-                [FILE_NAME]: line[FILE_NAME],
-                [FILE_FIELD]: line[FILE_FIELD],
-                [API_NAME]: line[API_NAME],
-                [API_FIELD]: line[API_FIELD],
-                fileConnectionFields: [],
-                apiConnectionFields: []
-            }
-        })
+    .map(line => {
+        return {
+            "_id": line["_id"],
+            [FILE_NAME]: line[FILE_NAME] ? line[FILE_NAME].toLowerCase() : '',
+            [FILE_FIELD]: line[FILE_FIELD],
+            [API_NAME]: line[API_NAME],
+            [API_FIELD]: line[API_FIELD],
+            fileConnectionFields: [],
+            apiConnectionFields: []
+        }
+    })
+    
         // .map(line => {
         //     return { ...line, fileConnectionFields: [], apiConnectionFields: []}
         // })
+    this.mapFields = this.mapFields.filter(line => !!line[FILE_NAME] && !!line[FILE_FIELD])
+    log(this.mapFields)
     this.fileFieldMapped = []
     this.apiFieldMapped = []
 
