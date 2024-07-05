@@ -53,6 +53,10 @@
             background-color: #007bb5;
         }
 
+        .button1:active {
+            background-color: #005f7a;
+        }
+
         .button2 {
             background-color: #4CAF50;
         }
@@ -84,8 +88,8 @@
         Upload Mapping File:
         <input type="file" id="mapFileInput" accept=".csv">
     <p id="mappingFileName"></p> -->
-    <input type="checkbox" name="ignoreUnrelatedFields" id="ignoreUnrelatedFields" value="Y" checked><label class="clickable" for="ignoreUnrelatedFields"> Ignore Unrelated Fields </label>
-    <button class="button button1" onclick="genDrawIO()">Generate Table for DrawIO</button>
+    <input type="checkbox" name="ignoreUnrelatedFields" id="ignoreUnrelatedFields"><label class="clickable" for="ignoreUnrelatedFields"> Hide Unmapped Fields </label>
+    <button id="genDrawIO" class="button button1" onclick="genDrawIO()">Generate Table for DrawIO</button>
     </div>
     <div id="gen-table" style="display: none;">
         <input type="text" name="tableName" id="tableName" value="Purchase Order">
@@ -103,6 +107,14 @@ PO_NUMBER</textarea>
         function $(id) {
             return document.getElementById(id)
         }
+        window.addEventListener('load', () => {
+            $('ignoreUnrelatedFields').checked = localStorage.getItem('hideUnmappedFields') == "true"
+
+            $('ignoreUnrelatedFields').addEventListener('click', () => {
+                localStorage.setItem('hideUnmappedFields', $('ignoreUnrelatedFields').checked)
+            })
+                
+        })
 
         // *** Start - Read CSV from input
 
@@ -118,12 +130,26 @@ PO_NUMBER</textarea>
         const LINE_BREAK = '&#10;'
         // %26%2310%3B
 
+        function changeButtonColor() {
+            var button = document.getElementById("genDrawIO");
+            var originalText = button.innerHTML;
+
+            button.innerHTML = "Copied...";
+            button.style.backgroundColor = "#4CAF50";  // Destaque ao clicar
+
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.backgroundColor = "";  // Remove o destaque
+            }, 1000);
+        }
+
         function genDrawIO() {
-            if (csvFiles.length && mapFile) { // && mapFile
+            if (csvFiles.length) { // && mapFile
                 let connectionMap = new Mapping(mapFile)
                 let filesResult = ''
                 restartFileVariables()
                 let ignoreUnrelatedFields = $('ignoreUnrelatedFields').checked
+                
                 csvFiles.forEach(csvFile => {
                     let fields = {
                         fieldNames: Object.keys(csvFile.fileContent[0]),
@@ -137,10 +163,11 @@ PO_NUMBER</textarea>
                     filesResult += createFile(csvFile.fileName, fields, connectionMap, ignoreUnrelatedFields)
                 })
                 let apiResult = createAllApis(allApis, connectionMap, ignoreUnrelatedFields)
-                let result = createAll(filesResult, apiResult, connectionMap)
+                let result = createAll(filesResult, apiResult)
                 copyToClipboard(result)
+                changeButtonColor()
             } else {
-                alert('Select Data and Map Files')
+                alert('Select Data  Files')
             }
         }
 

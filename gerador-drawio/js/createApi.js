@@ -4,17 +4,10 @@ let yIncrement = 20;
 let yApiIncrement = 40;
 let xIncrement = 10;
 
-function log(value, text) {
-    if (text) {
-        console.log(text, value);
-    } else {
-        console.log(value);
-    }
-    return value;
-}
 const styleIsMapped = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#cce5ff;strokeColor=#36393d;opacity=50;"'
 const styleRequired = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;"'
 const styleHasChild = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;"'
+const styleId = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;"'
 
 function createField(apiName, items, x, parentName = "", connectionMap, ignoreUnrelatedFields) {
     
@@ -26,21 +19,26 @@ function createField(apiName, items, x, parentName = "", connectionMap, ignoreUn
         if (field.child) {
             style = styleHasChild
         } else if (field.required) {
-            if (connectionMap.apiHasThisField(apiName, parentName, field, id, true)) {
+            if (connectionMap.destinationHasThisField(apiName, parentName, field, id, true)) {
                 // connectionMap.addApiMappingField(apiName, parentName, field, id)
                 style = styleIsMapped
             } else {
                 style = styleRequired
             }
+            connectionMap.addSourceFromDestinationMappingField(apiFromToFile[apiName], field.fieldName, id)
+        } else if (field.fieldName == 'id') {
+            connectionMap.addSourceMappingField(apiFromToFile[apiName], field.fieldName, id)
+            // connectionMap.addDestinationMappingField(apiFromToFile[apiName], parentName, field, id)
+            style = styleId
         } else if (ignoreUnrelatedFields) {
-            if (connectionMap.apiHasThisField(apiName, parentName, field, id, true)) {
+            if (connectionMap.destinationHasThisField(apiName, parentName, field, id, true)) {
                 // connectionMap.addApiMappingField(apiName, parentName, field, id)
                 style = styleIsMapped
             } else {
                 return ""
             }
         } else {
-            if (connectionMap.apiHasThisField(apiName, parentName, field, id, true)) {
+            if (connectionMap.destinationHasThisField(apiName, parentName, field, id, true)) {
                 // connectionMap.addApiMappingField(apiName, parentName, field, id)
                 style = styleIsMapped
             }
@@ -71,17 +69,17 @@ function createField(apiName, items, x, parentName = "", connectionMap, ignoreUn
 }
 
 const entityCoord = {
-    "Lane": { x: 490, y: 80},
-    "PurchaseOrderShipperOrder": { x: 810, y: 80},
-    "Carrier": { x: 1130, y: 80},
-    "Consignee": { x: 490, y: 320},
-    "Facility": { x: 810, y: 320},
-    "Week": { x: 1130, y: 320},
-    "PurchaseOrder": { x: 1450, y: 320},
-    "Shipment": { x: 770, y: 680},
-    "Tender": { x: 420, y: 2430},
-    "aaaaaaaaaa": { x: 1000, y: 1000},
-}
+    "PurchaseOrder": {"x": "1130", "y": "730"},
+    "Week": {"x": "490", "y": "290"},
+    "PurchaseOrderShipperOrder": {"x": "1170", "y": "90"},
+    "Carrier": {"x": "490", "y": "190"},
+    "Lane": {"x": "490", "y": "90"},
+    "FacilitySource": {"x": "770", "y": "450"},
+    "FacilityDestination": {"x": "770", "y": "650"},
+    "Consignee": {"x": "770", "y": "210"},
+    "Shipment": {"x": "1450", "y": "1130"},
+    "Tender": {"x": "930", "y": "2210" }
+  }
 
 const apiOrder = {
     "PurchaseOrder": 1,
@@ -89,7 +87,8 @@ const apiOrder = {
     "PurchaseOrderShipperOrder": 3,
     "Carrier": 3,
     "Lane": 4,
-    "Facility": 5,
+    "FacilitySource": 5,
+    "FacilityDestination": 5,
     "Consignee": 6,
     "Shipment": 7,
     "Tender": 8,
@@ -121,6 +120,24 @@ function createAllApis(items, connectionMap, ignoreUnrelatedFields) {
         return {...item, order: apiOrder[item.entity]}
     }).sort( (a, b) => a.order - b.order)
 
+    // Adding map for internal api ids like consignee id, week id
+    // to purchase_orders
+    connectionMap.addFieldMap({sourceName: 'consignee', sourceField: 'id', destName: 'purchase_orders', destField: 'consignee_id'})
+    // connectionMap.addFieldMap({[FILE_NAME]: 'consignee', [FILE_FIELD]: 'id', [API_NAME]: 'purchase_orders', [API_FIELD]: 'consignee_id'})
+    connectionMap.addFieldMap({sourceName: 'week', sourceField: 'id', destName: 'purchase_orders', destField: 'week_id'})
+    // to shipments
+    connectionMap.addFieldMap({sourceName: 'week', sourceField: 'id', destName: 'shipments', destField: 'week_id'})
+    connectionMap.addFieldMap({sourceName: 'carrier', sourceField: 'id', destName: 'shipments', destField: 'carrier_id'})
+    connectionMap.addFieldMap({sourceName: 'facilities_start', sourceField: 'id', destName: 'shipments', destField: 'legs.start.facility_id'})
+    connectionMap.addFieldMap({sourceName: 'purchase_orders', sourceField: 'id', destName: 'shipments', destField: 'legs.start.tasks.purchase_order_id'})
+    connectionMap.addFieldMap({sourceName: 'facilities_end', sourceField: 'id', destName: 'shipments', destField: 'legs.end.facility_id'})
+    connectionMap.addFieldMap({sourceName: 'consignee', sourceField: 'id', destName: 'shipments', destField: 'legs.end.business_entity_id'})
+    connectionMap.addFieldMap({sourceName: 'purchase_orders', sourceField: 'id', destName: 'shipments', destField: 'legs.end.tasks.purchase_order_id'})
+    // to tenders
+    connectionMap.addFieldMap({sourceName: 'carrier', sourceField: 'id', destName: 'tenders', destField: 'carrier_id'})
+    connectionMap.addFieldMap({sourceName: 'week', sourceField: 'id', destName: 'tenders', destField: 'week_id'})
+    connectionMap.addFieldMap({sourceName: 'lane', sourceField: 'id', destName: 'tenders', destField: 'lane_id'})
+
     // For each api in the list
     let apiResult = ""
     sortedItems.forEach(item => {
@@ -128,8 +145,8 @@ function createAllApis(items, connectionMap, ignoreUnrelatedFields) {
         let apiCoord = entityCoord[apiName]
 
         // Create the fields first
-        yStart = apiCoord.y + yApiIncrement
-        let fieldResult = createField(apiName, item.fields, apiCoord.x + 10, "", connectionMap, ignoreUnrelatedFields)
+        yStart = parseInt(apiCoord.y) + yApiIncrement
+        let fieldResult = createField(apiName, item.fields, parseInt(apiCoord.x) + 10, "", connectionMap, ignoreUnrelatedFields)
 
         // Create the Header sending the fields string assembled
         apiResult += createMxGraphModel(item.id, apiName, fieldResult, apiCoord.x, apiCoord.y)
@@ -139,16 +156,16 @@ function createAllApis(items, connectionMap, ignoreUnrelatedFields) {
         // apiResult += createConnections(filteredConnections)
 
         connectionMap.getItemsWithConnection(apiName).forEach(line => {
-        line.fileConnectionFields.forEach(fileItem => {
-            if (line.apiConnectionFields[0]) {
-                apiResult += createConnections({from: fileItem.mappingFieldId, to: line.apiConnectionFields[0].mappingFieldId})
-            }
+            line.sourceConnectionFields.forEach(fileItem => {
+                if (line.destinationConnectionFields[0]) {
+                    let connectionResult = createConnections({from: fileItem.mappingFieldId, to: line.destinationConnectionFields[0].mappingFieldId})
+                    apiResult += connectionResult
+                }
+            })
         })
+
+
     })
-
-    })    
-
-    log(tags)
     return apiResult;
 }
 

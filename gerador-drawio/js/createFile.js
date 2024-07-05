@@ -16,10 +16,10 @@ function createFile(fileName, fields, connectionMap, ignoreUnrelatedFields) {
         let fieldNameLower = fileName.toLowerCase()
 
         let style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;"'
-        if (connectionMap.fileHasThisField(fieldNameLower, item)) {
+        if (connectionMap.sourceHasThisField(fieldNameLower, item)) {
         // if (isObject && connectionsData.find(conn => conn.from.id == item.id)) {
             style = 'style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;fillColor=#cce5ff;strokeColor=#36393d;opacity=50;"'
-            connectionMap.addFileMappingField(fieldNameLower, item, id)
+            connectionMap.addSourceMappingField(fieldNameLower, item, id)
         } else if (ignoreUnrelatedFields) {
             // skip
             return ""
@@ -51,10 +51,10 @@ function createFile(fileName, fields, connectionMap, ignoreUnrelatedFields) {
 
     // Sort to have the fields that are mapped as first items
     fields.fieldNames = fields.fieldNames.sort((fieldA, fieldB) => {
-        if (connectionMap.fileHasThisField(fileName.toLowerCase(), fieldA)) {
+        if (connectionMap.sourceHasThisField(fileName.toLowerCase(), fieldA)) {
             return -1
         }
-        if (connectionMap.fileHasThisField(fileName.toLowerCase(), fieldB)) {
+        if (connectionMap.sourceHasThisField(fileName.toLowerCase(), fieldB)) {
             return 1
         }
         return 0
