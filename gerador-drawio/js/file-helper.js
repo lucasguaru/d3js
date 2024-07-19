@@ -22,7 +22,7 @@ function isMappingHeaderStr(headerStr) {
 
 function addDataFilesListener(event) {
     const files = event.target.files;
-    const linesToRead = 300;
+    const linesToRead = 350;
     const linesToReturn = 20;
 
     if (files.length) {
@@ -62,7 +62,6 @@ function addDataFilesListener(event) {
 
 function addMapFileListener(event) {
     const file = event.target.files[0];
-    const linesToRead = 30;
 
     if (file) {
         let fileName = file.name
@@ -70,7 +69,7 @@ function addMapFileListener(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const buffer = e.target.result;
-            let jsonFile = readCsvFileAsJson(buffer, linesToRead);
+            let jsonFile = readCsvFileAsJson(buffer, -1);
             mapFile = {
                 fileName: fileName,
                 fileContent: jsonFile,
