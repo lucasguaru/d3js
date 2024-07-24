@@ -196,8 +196,10 @@ function createFacility(row) {
 
     let provider = 'Shipper'
     let shipper = shipperName;
-    let businessEntity = 'Customer'
-    let businessEntityName = row["Parent Customer Name"]
+    // let businessEntity = 'Customer'
+    // let businessEntityName = row["Parent Customer Name"]
+    let businessEntity = 'Shipper'
+    let businessEntityName = shipperName
     let facilityExternalId = row["Pick-up Location Reference Number"]
     let name = row["Pick-up Location Name"]
 
