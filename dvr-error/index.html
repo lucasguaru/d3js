@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DV&R Exported Errors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .link-action {
+            font-family: Verdana, sans-serif;
+            font-size: 0.8em; /* Adjust the size as needed */
+        }
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #uploadArea {
+            border: 2px dashed #ccc;
+            padding: 50px;
+            text-align: center;
+            cursor: pointer;
+            color: #aaa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #f4f4f4;
+        }
+        .filter-row {
+            margin-top: 20px;
+        }
+    </style>
+    <script src="pre-script.js"></script>
+    <script src="file-helper.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>DV&R Exported Errors</h1>
+        <div id="uploadArea">Drag and drop a CSV file here or click to upload</div>
+        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+        <div id="fileInfo" class="filter-row"></div>
+        <div id="errorTypeFilter" class="filter-row" style="display: none;">
+            <label for="errorFilter">Filter by ERROR_MESSAGES: </label>
+            <select id="errorFilter">
+                <option value="All">All</option>
+            </select>
+        </div>
+        <table id="csvTable" style="display: none;">
+            <thead>
+                <tr id="headerRow"></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="dvr-script.js"></script>
+</body>
+</html>
