@@ -184,10 +184,17 @@ function filterTable(filterValue) {
     displayTable(filteredData);
 }
 
+let hostname =  "https://app.iso.io"
+if (location.href.startsWith("http://127.0.0.1") ||
+    location.href.startsWith("chrome-extension://ionddbbajfnnldeeegmbaflgnbphfjhj")) {
+    hostname =  "https://6433-ssra-bbpatch-re.staging.iso.io"
+}
+log(location.href)
+
 function findFacility(row) {
     console.log('Find Facility:', row);
     let facilityExternalId = row["Pick-up Location Reference Number"]
-    let newUrl = `https://app.iso.io/admin/facility?query=${facilityExternalId}`
+    let newUrl = `${hostname}/admin/facility?query=${facilityExternalId}`
     window.open(newUrl, '_blank');
 }
 
@@ -201,13 +208,14 @@ function createFacility(row) {
     let businessEntity = 'Shipper'
     let businessEntityName = shipperName
     let facilityExternalId = row["Pick-up Location Reference Number"]
-    let name = row["Pick-up Location Name"]
+    let name = row["Pick-up Location Name"].replaceAll("–", "-")
 
     let data = { provider, shipper, businessEntity, businessEntityName, facilityExternalId, name }
+    log(data)
 
     let dataBase64 = btoa(JSON.stringify(data))
 
-    let newUrl = `https://app.iso.io/admin/facility_business/new?data=${dataBase64}`
+    let newUrl = `${hostname}/admin/facility_business/new?data=${dataBase64}`
     window.open(newUrl, '_blank');
 }
 
@@ -225,7 +233,7 @@ function searchAddress(row) {
 function openDVRErrors(row) {
     row.ERROR_MESSAGES
     let query = `q[with_row_data]="Pick-up Location Reference Number":"${row["Pick-up Location Reference Number"]}"&q[organization_name_cont]=${shipperName}&q[row_errors_message_cont]=${row.ERROR_MESSAGES}&commit=Filter`
-    let newUrl = `https://app.iso.io/dvr/invalid_rows?${query}&commit=Filter`
+    let newUrl = `${hostname}/dvr/invalid_rows?${query}&commit=Filter`
     log(newUrl)
     window.open(newUrl, '_blank');
 

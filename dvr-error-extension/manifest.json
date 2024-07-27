@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ISO DV&R Reconciliation",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Helps with ISO DV&R Data Reconciliation",
     "permissions": [
         "activeTab",
@@ -21,7 +21,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://app.iso.io/admin/facility_business/new*"
+                "https://*.iso.io/admin/facility_business/new*"
             ],
             "js": [
                 "inject.js"
