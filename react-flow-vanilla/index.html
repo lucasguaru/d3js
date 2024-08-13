@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Nodes and Groups</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container">
+        <div class="group" id="groupA">
+            <div class="node" id="nodeA1">Node A.1</div>
+        </div>
+        <div class="node" id="node0">Node 0</div>
+        <div class="node" id="node1">Node 1</div>
+        <div class="group" id="groupB">
+            <div class="node" id="nodeB1">Node B.1</div>
+            <div class="group" id="groupBA">
+                <div class="node" id="nodeBA1">Node B.A.1</div>
+                <div class="node" id="nodeBA2">Node B.A.2</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

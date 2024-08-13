@@ -1,0 +1,64 @@
+#container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-color: #f0f0f0;
+}
+
+.node, .group {
+    position: absolute;
+    padding: 10px;
+    border: 2px solid #000;
+    background-color: #fff;
+    cursor: move;
+    user-select: none;
+}
+
+.group {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+#node0 { top: 50px; left: 400px; }
+#node1 { top: 200px; left: 400px; }
+
+#groupA {
+    top: 100px;
+    left: 100px;
+    width: 150px;
+    height: 150px;
+}
+
+#nodeA1 {
+    top: 50px;
+    left: 50px;
+}
+
+#groupB {
+    top: 100px;
+    left: 600px;
+    width: 250px;
+    height: 250px;
+}
+
+#nodeB1 {
+    top: 50px;
+    left: 50px;
+}
+
+#groupBA {
+    top: 100px;
+    left: 50px;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255, 0, 0, 0.4);
+}
+
+#nodeBA1 {
+    top: 30px;
+    left: 30px;
+}
+
+#nodeBA2 {
+    top: 100px;
+    left: 30px;
+}
