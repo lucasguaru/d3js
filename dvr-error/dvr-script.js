@@ -214,5 +214,5 @@ function filterTable(filterValue) {
 let hostname =  "https://app.iso.io"
 if (location.href.startsWith("http://127.0.0.1") ||
     location.href.startsWith("chrome-extension://ionddbbajfnnldeeegmbaflgnbphfjhj")) {
-    hostname =  "https://6472-ssra-bluebuff-p.staging.iso.io/"
+    hostname =  "https://6472-ssra-bluebuff-p.staging.iso.io"
 }

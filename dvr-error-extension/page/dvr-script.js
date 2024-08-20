@@ -9,25 +9,51 @@ let jsonData = [];
 let originalJsonData = []
 
 const fieldsJson = {
-    "Utz-Shipments File": [
-        "Pick-up Location Reference Number",
-        "Parent Customer Name",
-        "Pick-up Location Name",
-        "Pick-up Location City",
-        "Pick-up Location Postal Code",
-        "ERROR_MESSAGES",
-        // "ROW_ID"
-    ]
+    "Utz-Shipments File": {
+        "All": [
+            "Pick-up Location Reference Number",
+            "Parent Customer Name",
+            "Pick-up Location Name",
+            "Pick-up Location City",
+            "Pick-up Location Postal Code",
+            "ERROR_MESSAGES",
+            // "ROW_ID"
+        ],
+        "ISO:MISSING_SOURCE_FACILITY": [
+            "Pick-up Location Reference Number",
+            "Parent Customer Name",
+            "Pick-up Location Name",
+            "Pick-up Location City",
+            "Pick-up Location Postal Code",
+            "ERROR_MESSAGES",
+            // "ROW_ID"
+        ],
+        "ISO:MISSING_DESTINATION_FACILITY": [
+            "Delivery Location Reference Number",
+            "Parent Customer Name",
+            "Delivery Location Name",
+            "Delivery Location City",
+            "Delivery Location Postal Code",
+            "ERROR_MESSAGES",
+            // "ROW_ID"
+        ]
+    }
 };
 
 const fieldsAction = {
     "Utz-Shipments File": {
         "ISO:MISSING_SOURCE_FACILITY": [
-            { name: "Find Facility", fnAction: findFacility },
-            { name: "Search Address", fnAction: searchAddress },
-            { name: "Create Facility", fnAction: createFacility },
-            { name: "DV&R Errors", fnAction: openDVRErrors },
-        ]
+            { name: "Find Facility", fnAction: findFacilitySource },
+            { name: "Search Address", fnAction: searchAddressSource },
+            { name: "Create Facility", fnAction: createFacilitySource },
+            { name: "DV&R Errors", fnAction: openDVRErrorsSource },
+        ],
+        "ISO:MISSING_DESTINATION_FACILITY": [
+            { name: "Find Facility", fnAction: findFacilityDestination },
+            { name: "Search Address", fnAction: searchAddressDestination },
+            { name: "Create Facility", fnAction: createFacilityDestination },
+            { name: "DV&R Errors", fnAction: openDVRErrorsDestination },
+        ],
     }
 };
 
@@ -110,7 +136,7 @@ function handleFileUpload(file) {
         const csvData = e.target.result;
         originalJsonData = readCsvFileAsJson(csvData, ',', -1)
         jsonData = originalJsonData
-        fieldsToShow = fieldsJson[combinationKey]
+        fieldsToShow = fieldsJson[combinationKey]["All"]
         jsonData = distinctFacility(jsonData)
         jsonData = sortByFieldName(jsonData, 'Pick-up Location Reference Number')
         populateErrorFilter(jsonData);
@@ -131,11 +157,12 @@ function populateErrorFilter(json) {
     });
 }
 
-function displayTable(json) {
+function displayTable(json, filterValue = 'All') {
     headerRow.innerHTML = '';
     tbody.innerHTML = '';
     csvTable.style.display = 'table';
 
+    fieldsToShow = fieldsJson[combinationKey][filterValue]
     const headersToShow = fieldsToShow || Object.keys(json[0]);
     headersToShow.forEach(header => {
         const th = document.createElement('th');
@@ -181,60 +208,11 @@ function displayTable(json) {
 
 function filterTable(filterValue) {
     const filteredData = filterValue === 'All' ? jsonData : jsonData.filter(row => row.ERROR_MESSAGES === filterValue);
-    displayTable(filteredData);
+    displayTable(filteredData, filterValue);
 }
 
 let hostname =  "https://app.iso.io"
 if (location.href.startsWith("http://127.0.0.1") ||
     location.href.startsWith("chrome-extension://ionddbbajfnnldeeegmbaflgnbphfjhj")) {
-    hostname =  "https://6433-ssra-bbpatch-re.staging.iso.io"
-}
-log(location.href)
-
-function findFacility(row) {
-    console.log('Find Facility:', row);
-    let facilityExternalId = row["Pick-up Location Reference Number"]
-    let newUrl = `${hostname}/admin/facility?query=${facilityExternalId}`
-    window.open(newUrl, '_blank');
-}
-
-function createFacility(row) {
-    console.log('Create Facility:', row);
-
-    let provider = 'Shipper'
-    let shipper = shipperName;
-    // let businessEntity = 'Customer'
-    // let businessEntityName = row["Parent Customer Name"]
-    let businessEntity = 'Shipper'
-    let businessEntityName = shipperName
-    let facilityExternalId = row["Pick-up Location Reference Number"]
-    let name = row["Pick-up Location Name"].replaceAll("–", "-")
-
-    let data = { provider, shipper, businessEntity, businessEntityName, facilityExternalId, name }
-    log(data)
-
-    let dataBase64 = btoa(JSON.stringify(data))
-
-    let newUrl = `${hostname}/admin/facility_business/new?data=${dataBase64}`
-    window.open(newUrl, '_blank');
-}
-
-function searchAddress(row) {
-    console.log('Search Address:', row);
-    let city = row["Pick-up Location City"]
-    let name = row["Pick-up Location Name"]
-    let postalCode = row["Pick-up Location Postal Code"]
-    let query = city + '+' + name + (postalCode ? '+' + postalCode : '')
-    // https://www.google.com/search?q=OLTON+CSS+FARMS+79064
-    let newUrl = `https://www.google.com/search?q=${query}`
-    window.open(newUrl, '_blank');
-}
-
-function openDVRErrors(row) {
-    row.ERROR_MESSAGES
-    let query = `q[with_row_data]="Pick-up Location Reference Number":"${row["Pick-up Location Reference Number"]}"&q[organization_name_cont]=${shipperName}&q[row_errors_message_cont]=${row.ERROR_MESSAGES}&commit=Filter`
-    let newUrl = `${hostname}/dvr/invalid_rows?${query}&commit=Filter`
-    log(newUrl)
-    window.open(newUrl, '_blank');
-
+    hostname =  "https://6472-ssra-bluebuff-p.staging.iso.io"
 }

@@ -23,8 +23,10 @@ function log(value, text) {
     return value;
 }
 
+console.log('read 1')
 window.addEventListener('load', () => {
     setTimeout(() => {
+        console.log('read 2')
         addDataOnScreen()
     }, 100)
 })
@@ -34,7 +36,7 @@ function typeOnSimpleSelect(value, selector) {
     select.value = value
     select.dispatchEvent(new Event("change", { view: window, bubbles: true, cancelable: true }));
 }
-let DEBUG = false
+let DEBUG = true
 function debug(v1, v2, v3) {
     if (DEBUG) {
         // console.log(v1, v2, v3)
@@ -43,11 +45,13 @@ function debug(v1, v2, v3) {
 }
 
 function addDataOnScreen() {
+
+    console.log('read 3')
     let url = location.href
     log({url})
     if (url.includes('?data=')) {
         let data = JSON.parse(atob(url.substringAfter('?data=')))
-        log(data)
+        debug(data)
         typeOnSimpleSelect(data.provider, "#facility_business_provider_type")
         
         typeOnSimpleSelect(data.businessEntity, "#facility_business_business_entity_type")
@@ -55,9 +59,16 @@ function addDataOnScreen() {
         document.querySelector("#facility_business_external_id").value = data.facilityExternalId
         document.querySelector("#facility_business_name").value = data.name
 
+        let businessEntityName = data.businessEntityName
+        if (data.businessEntity != "Customer") {
+            businessEntityName = data.shipper
+        }
+
         findSelectCount = 0
+        // Set provider name
         typeOnSelect(data.shipper, "#facility_business_provider_id_field > div > div.row > div.col-sm-4 > div > input", () => {
-            typeOnSelect(data.shipper, "#facility_business_business_entity_id_field > div > div.row > div.col-sm-4 > div > input", () => {
+            // Set business entity name
+            typeOnSelect(businessEntityName, "#facility_business_business_entity_id_field > div > div.row > div.col-sm-4 > div > input", () => {
                 document.querySelector("#facility_business_raw_address_field > div > div").innerText = "Required when Facility is not selected"
                 let rawAddress = document.querySelector("#facility_business_raw_address")
                 rawAddress.focus({ focusVisible: true })
