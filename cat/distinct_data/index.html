@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .file-drop {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .file-drop.dragover {
+            border-color: #4CAF50;
+        }
+        textarea {
+            width: 100%;
+            max-width: 400px;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .message {
+            font-size: 18px;
+            color: green;
+            margin-top: 20px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Upload and Validation</h1>
+    <div class="file-drop" id="file-drop">
+        Drag and drop your .csv file here, or click to upload.
+        <input type="file" id="file-input" style="display:none">
+    </div>
+    <textarea id="textarea" placeholder="Enter the valid equipment_type, each one on a new line">V
+R
+PO
+SB
+VM
+SP
+VD
+VR
+F
+POM
+SBM
+SBL
+VZ
+CN
+LTL
+FT
+SPM
+HS
+RM
+RSB
+VDM
+SD
+VAN
+RD
+RZ
+RGN
+FLAT
+ID
+SBZ
+POZ
+AC
+RB
+FZ
+VZM
+FM
+SN
+FO
+RGO
+FN
+40IM
+VA
+RDUV
+VG
+O
+RZM
+VV
+L
+TANK
+SDO
+EDV
+DDT
+VF
+EASE
+VH
+AH
+SYS
+PDXV
+REFR
+TA</textarea>
+    <button id="validate-button">Validate</button>
+    
+    <div id="result"></div>
+
+    <table id="result-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>Row Number</th>
+                <th>Equipment Type</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+
+    <script>
+        const fileDrop = document.getElementById('file-drop');
+        const fileInput = document.getElementById('file-input');
+        const validateButton = document.getElementById('validate-button');
+        const resultDiv = document.getElementById('result');
+        const resultTable = document.getElementById('result-table');
+        const tableBody = document.getElementById('table-body');
+        let jsonData = [];
+
+        // File drop and upload handling
+        fileDrop.addEventListener('click', () => fileInput.click());
+
+        fileDrop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDrop.classList.add('dragover');
+        });
+
+        fileDrop.addEventListener('dragleave', () => {
+            fileDrop.classList.remove('dragover');
+        });
+
+        fileDrop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDrop.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (file && file.name.endsWith('.csv')) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    processFile(event.target.result);
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please upload a valid .csv file.');
+            }
+        }
+
+        function processFile(content) {
+            const lines = content.split('\n');
+            lines.shift(); // Ignore the first line
+            
+            jsonData = lines
+                .filter(line => line.trim()) // Remove empty lines
+                .map(line => {
+                    debugger
+                    return JSON.parse(line.trim())
+                }); // Parse each line as JSON
+        }
+
+        validateButton.addEventListener('click', () => {
+            const textAreaContent = document.getElementById('textarea').value.trim().split('\n').map(item => item.trim());
+            const distinctEquipmentTypes = [...new Set(jsonData.map(item => item.equipment_type))];
+
+            const invalidRows = [];
+            distinctEquipmentTypes.forEach((type, index) => {
+                if (!textAreaContent.includes(type)) {
+                    const row = jsonData.findIndex(item => item.equipment_type === type) + 1;
+                    invalidRows.push({ rowNumber: row, equipmentType: type });
+                }
+            });
+
+            displayResult(invalidRows);
+        });
+
+        function displayResult(invalidRows) {
+            resultDiv.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (invalidRows.length === 0) {
+                resultDiv.innerHTML = '<p class="message">All equipment types are valid and present in the text area.</p>';
+                resultTable.style.display = 'none';
+            } else {
+                resultDiv.innerHTML = `<p class="error-message">${invalidRows.length} records have invalid equipment types.</p>`;
+                resultTable.style.display = 'table';
+                invalidRows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${row.rowNumber}</td><td>${row.equipmentType}</td>`;
+                    tableBody.appendChild(tr);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
