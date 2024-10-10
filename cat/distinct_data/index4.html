@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV JSON Viewer with Field Filtering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #left-panel {
+            width: 40%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #right-panel {
+            width: 60%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #file-upload {
+            margin-bottom: 10px;
+        }
+
+        #table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        #json-fields {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+
+        #json-fields label {
+            display: block;
+        }
+
+        .drag-area {
+            padding: 20px;
+            border: 2px dashed #ccc;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .bookings-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bookings-table th, .bookings-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="left-panel">
+        <div id="file-upload">
+            <div class="drag-area" id="drag-area">Drag & Drop file here or click to upload</div>
+            <input type="file" id="file-input" accept=".csv" style="display:none;">
+        </div>
+        <div id="table-container">
+            <span id="record-count">0 records</span>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Row Number</th>
+                        <th>Shipment Id</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Table rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div id="json-fields">
+            <span>JSON Fields:</span>
+            <!-- Checkboxes for JSON fields will be dynamically generated here -->
+        </div>
+    </div>
+
+    <div id="right-panel">
+        <div id="monaco-editor" style="width:100%;height:60vh;"></div>
+        <div id="bookings-container"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.js"></script>
+    <script>
+        let jsonData = [];
+        let selectedRowIndex = 0;
+
+        // Load Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            window.editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                value: "",
+                language: "json",
+                theme: "vs-dark",
+                readOnly: true
+            });
+        });
+
+        const dragArea = document.getElementById('drag-area');
+        const fileInput = document.getElementById('file-input');
+
+        dragArea.addEventListener('click', () => fileInput.click());
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('dragging');
+        });
+        dragArea.addEventListener('dragleave', () => dragArea.classList.remove('dragging'));
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('dragging');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const content = event.target.result;
+                    parseCSV(content);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function getJsonLine(line) {
+            let newLine = line.substring(1, line.lastIndexOf('"'));
+            newLine = newLine.substring(0, newLine.length - 2);
+            newLine = newLine.replace('\\o', '~o');
+            newLine = newLine.replaceAll('","', ',');
+            newLine = newLine.replaceAll('\\"""', '~');
+            newLine = newLine.replaceAll('"\\""', '~');
+            newLine = newLine.replaceAll('\\""', '~');
+            newLine = newLine.replaceAll('"', '');
+            newLine = newLine.replaceAll('~', '"');
+
+            let json = null;
+            try {
+                json = JSON.parse(newLine);
+                return trimAndReplace(json);
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                return null;
+            }
+        }
+
+        function trimAndReplace(json) {
+            const traverseAndTrim = (obj) => {
+                for (const key in obj) {
+                    if (typeof obj[key] === 'string') {
+                        obj[key] = obj[key].trim();
+                    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                        traverseAndTrim(obj[key]);
+                    }
+
+                    // Special replacement for stop_task_type
+                    if (key === 'stop_task_type') {
+                        obj[key] = obj[key] === 'PU' ? 'Pick Up' : obj[key] === 'SO' ? 'Drop Off' : obj[key];
+                    }
+                }
+            };
+            traverseAndTrim(json);
+            return json;
+        }
+
+        function parseCSV(csvContent) {
+            const lines = csvContent.split("\n").slice(1); // Skip the first line
+            jsonData = lines.map((line, index) => {
+                try {
+                    return { index: index + 1, ...getJsonLine(line.trim()) };
+                } catch (e) {
+                    return null;
+                }
+            }).filter(row => row !== null);
+
+            populateTable(jsonData);
+            populateFields(Object.keys(jsonData[0]));
+            updateEditor(jsonData[0]);
+            displayBookings(jsonData[0].bookings || []);
+        }
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            document.getElementById('record-count').innerText = `${data.length} records`;
+
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.index}</td><td>${row.shipment_external_id}</td>`;
+                tr.addEventListener('click', () => selectRow(index));
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function populateFields(fields) {
+            const jsonFieldsContainer = document.getElementById('json-fields');
+            jsonFieldsContainer.innerHTML = '<span>JSON Fields:</span>';
+            const savedFields = JSON.parse(localStorage.getItem('jsonFields')) || {};
+
+            fields.forEach(field => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = savedFields[field] !== false;
+                checkbox.value = field;
+                checkbox.addEventListener('change', toggleField);
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(field));
+                jsonFieldsContainer.appendChild(label);
+            });
+        }
+
+        function toggleField() {
+            const selectedFields = Array.from(document.querySelectorAll('#json-fields input[type="checkbox"]:checked')).map(cb => cb.value);
+            const savedFields = {};
+            document.querySelectorAll('#json-fields input[type="checkbox"]').forEach(cb => {
+                savedFields[cb.value] = cb.checked;
+            });
+            localStorage.setItem('jsonFields', JSON.stringify(savedFields));
+
+            updateEditor(jsonData[selectedRowIndex], selectedFields);
+        }
+
+        function selectRow(index) {
+            selectedRowIndex = index;
+            const selectedFields = Array.from(document.querySelectorAll('#json-fields input[type="checkbox"]:checked')).map(cb => cb.value);
+            updateEditor(jsonData[index], selectedFields);
+            displayBookings(jsonData[index].bookings || []);
+        }
+
+        function updateEditor(data, fields = null) {
+            const displayedData = fields ? fields.reduce((obj, key) => {
+                if (data[key] !== undefined && key !== 'bookings') obj[key] = data[key];
+                return obj;
+            }, {}) : data;
+
+            window.editor.setValue(JSON.stringify(displayedData, null, 2));
+        }
+
+        function displayBookings(bookings) {
+            const container = document.getElementById('bookings-containe');
+            if (container) container.innerHTML = '';
+            if (bookings.length > 0) {
+            const table = document.createElement('table');
+            table.classList.add('bookings-table');
+            const thead = document.createElement('thead');
+            const headers = Object.keys(bookings[0]);
+            const tr = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.innerText = header;
+                tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            bookings.forEach(booking => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.innerText = booking[header];
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+    }
+
+    // Keyboard navigation for rows
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowUp' && selectedRowIndex > 0) {
+            selectRow(selectedRowIndex - 1);
+        } else if (e.key === 'ArrowDown' && selectedRowIndex < jsonData.length - 1) {
+            selectRow(selectedRowIndex + 1);
+        }
+    });
+</script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>

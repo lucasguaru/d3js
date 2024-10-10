@@ -65,7 +65,7 @@ function generateCode() {
     document.getElementById("codeSection").style.display = "block";
 }
 
-function copyToClipboard(codeId, copiedId) {
+function copyToClipboardGen(codeId, copiedId) {
     const codeElement = document.getElementById(codeId);
     codeElement.select();
     codeElement.setSelectionRange(0, 99999); // For mobile devices

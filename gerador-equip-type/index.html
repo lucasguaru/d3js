@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .output-area {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 150px;
+            border-radius: 5px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Code Generator</h1>
+        <textarea id="inputText" placeholder="Enter the values separated by tabs..."></textarea>
+        <button onclick="generateCode()">Generate Code</button>
+        <textarea id="outputText" class="output-area" readonly placeholder="The generated code will appear here..."></textarea>
+    </div>
+
+    <script>
+        // Function to convert input text to the desired format
+        function convertToFormattedText(input) {
+            // Split the input text into lines
+            const lines = input.trim().split('\n');
+
+            // Process each line to generate the output format
+            const result = lines.map(line => {
+                const [key, type] = line.trim().split('\t');  // Split by tab
+                // Convert the type to uppercase and append '_EQUIPMENT_TYPE'
+                const transformedType = type.toUpperCase() + '_EQUIPMENT_TYPE';
+                return `'${key}': Connector::TransformStep::${transformedType},`;
+            });
+
+            return result.join('\n');
+        }
+
+        // Function to generate code and display it in the output area
+        function generateCode() {
+            const inputText = document.getElementById('inputText').value;
+            const outputText = convertToFormattedText(inputText);
+            document.getElementById('outputText').value = outputText;
+        }
+    </script>
+</body>
+</html>

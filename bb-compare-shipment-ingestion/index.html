@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validate BB Shipment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .upload-section {
+            border: 2px dashed #cccccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .upload-section:hover {
+            background-color: #f0f0f0;
+        }
+        #compareButton {
+            width: 100%;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        #resultTable {
+            width: 100%;
+            margin-top: 20px;
+        }
+        #resultTable th, #resultTable td {
+            text-align: left;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="text-center mt-4">Validate BB Shipment</h2>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div id="uploadISOFile" class="upload-section">Drop or upload ISO exported shipment file</div>
+            <input type="file" id="isoFileInput" accept=".csv" style="display:none;">
+        </div>
+        <div class="col-md-6">
+            <div id="uploadCustomerFiles" class="upload-section">Drop or upload customer uploaded files</div>
+            <input type="file" id="customerFilesInput" multiple accept=".csv" style="display:none;">
+        </div>
+    </div>
+
+    <button id="compareButton" class="btn btn-success">Compare</button>
+
+    <table id="resultTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Shipment ID</th>
+                <th>Filtered</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+    </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
+    let isoData = [];
+    let customerFilesData = [];
+
+    document.getElementById('uploadISOFile').addEventListener('click', () => {
+        document.getElementById('isoFileInput').click();
+    });
+
+    document.getElementById('uploadCustomerFiles').addEventListener('click', () => {
+        document.getElementById('customerFilesInput').click();
+    });
+
+    document.getElementById('isoFileInput').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            Papa.parse(file, {
+                header: true,
+                complete: (results) => {
+                    isoData = results.data;
+                    console.log('ISO Data:', isoData);
+                }
+            });
+        }
+    });
+
+    document.getElementById('customerFilesInput').addEventListener('change', (event) => {
+        const files = event.target.files;
+        for (const file of files) {
+            Papa.parse(file, {
+                header: true,
+                complete: (results) => {
+                    customerFilesData.push({ fileName: file.name, data: results.data });
+                    console.log('Customer Files Data:', customerFilesData);
+                }
+            });
+        }
+    });
+
+    document.getElementById('compareButton').addEventListener('click', () => {
+        const results = compareFiles(isoData, customerFilesData);
+        displayResults(results);
+    });
+
+    function compareFiles(isoData, customerFilesData) {
+        const notFoundRecords = [];
+        customerFilesData.forEach(file => {
+            const fieldToCompare = file.fileName.startsWith('ISO_Shipment_(TMS_262)') ? 'TC Shipment Id' : 
+                                  file.fileName.startsWith('ISO_Shipment_and_Orders_(OM_130)') ? 'Shipment Id' : 
+                                  null;
+            if (!fieldToCompare) return;
+
+            file.data.forEach(row => {
+                const isoMatch = isoData.some(isoRow => isoRow['external_load_id'] === row[fieldToCompare]);
+                if (!isoMatch) {
+                    const filterResult = applyFilterRule(row);
+                    notFoundRecords.push({ fileName: file.fileName, shipmentId: row[fieldToCompare], filtered: filterResult });
+                }
+            });
+        });
+        return notFoundRecords;
+    }
+
+    function applyFilterRule(row) {
+        // Replace this with your custom filter function.
+        // Return null for no filter, or a string with the filter explanation.
+        debugger
+        return null; 
+    }
+
+    function displayResults(results) {
+        const resultBody = document.getElementById('resultBody');
+        resultBody.innerHTML = '';
+        results.forEach(result => {
+            const row = document.createElement('tr');
+
+            const fileNameCell = document.createElement('td');
+            fileNameCell.textContent = result.fileName;
+            row.appendChild(fileNameCell);
+
+            const shipmentIdCell = document.createElement('td');
+            shipmentIdCell.textContent = result.shipmentId || '';
+            row.appendChild(shipmentIdCell);
+
+            const filteredCell = document.createElement('td');
+            if (result.filtered) {
+                filteredCell.textContent = 'Filtered';
+                filteredCell.title = result.filtered;
+            }
+            row.appendChild(filteredCell);
+
+            resultBody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Data and Schema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr {
+            cursor: pointer;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        tr.selected {
+            background-color: #d1e7dd;
+        }
+        .message {
+            font-size: 18px;
+            color: green;
+            margin-top: 20px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: red;
+            margin-top: 20px;
+        }
+        #editor {
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Show Data and Schema</h1>
+
+    <!-- Table to Show Data -->
+    <div style="flex: 1;">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Row Number</th>
+                    <th>Shipment Id</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Tabs for Monaco Editor and Schema -->
+    <div class="tabs">
+        <div class="tab active" data-target="json-tab">JSON Data</div>
+        <div class="tab" data-target="schema-tab">Schema</div>
+    </div>
+
+    <!-- JSON Data Tab -->
+    <div class="tab-content active" id="json-tab">
+        <div id="editor"></div>
+    </div>
+
+    <!-- Schema Tab -->
+    <div class="tab-content" id="schema-tab">
+        <div id="schema-container"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+    <script>
+        // Monaco Editor Setup
+        let editor;
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '',
+                language: 'json',
+                theme: 'vs-dark'
+            });
+        });
+
+        // Sample JSON Data
+        let jsonData = [
+            { shipment_external_id: 'SHIP123', equipment_type: 'VR', other_data: 'Sample data 1' },
+            { shipment_external_id: 'SHIP456', equipment_type: 'PO', other_data: 'Sample data 2' },
+            { shipment_external_id: 'SHIP789', equipment_type: 'SB', other_data: 'Sample data 3' }
+        ];
+
+        const dataTable = document.getElementById('data-table').querySelector('tbody');
+        let selectedRowIndex = 0;
+        let schemaFields = [];
+
+        // Populate Table
+        function populateDataTable() {
+            dataTable.innerHTML = '';
+            jsonData.forEach((data, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${index + 1}</td><td>${data.shipment_external_id}</td>`;
+                row.addEventListener('click', () => selectRow(index));
+                dataTable.appendChild(row);
+            });
+            selectRow(0); // Automatically select the first row
+        }
+
+        function selectRow(index) {
+            const rows = dataTable.querySelectorAll('tr');
+            rows.forEach(row => row.classList.remove('selected'));
+            rows[index].classList.add('selected');
+            selectedRowIndex = index;
+            updateMonacoEditor();
+        }
+
+        function updateMonacoEditor() {
+            const selectedData = filterFields(jsonData[selectedRowIndex]);
+            editor.setValue(JSON.stringify(selectedData, null, 2));
+        }
+
+        function filterFields(data) {
+            const filteredData = {};
+            schemaFields.forEach(field => {
+                if (field.checked) {
+                    filteredData[field.name] = data[field.name];
+                }
+            });
+            return filteredData;
+        }
+
+        // Handle Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement === document.body && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
+                if (e.key === 'ArrowUp' && selectedRowIndex > 0) {
+                    selectRow(selectedRowIndex - 1);
+                } else if (e.key === 'ArrowDown' && selectedRowIndex < jsonData.length - 1) {
+                    selectRow(selectedRowIndex + 1);
+                }
+            }
+        });
+
+        // Populate Schema with Checkboxes
+        function populateSchema() {
+            const schemaContainer = document.getElementById('schema-container');
+            schemaContainer.innerHTML = '';
+
+            const exampleData = jsonData[0];
+            schemaFields = Object.keys(exampleData).map(key => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = true;
+                checkbox.addEventListener('change', () => updateMonacoEditor());
+
+                const label = document.createElement('label');
+                label.textContent = key;
+
+                const div = document.createElement('div');
+                div.appendChild(checkbox);
+                div.appendChild(label);
+
+                schemaContainer.appendChild(div);
+
+                return { name: key, checked: true, element: checkbox };
+            });
+        }
+
+        // Tabs Switching Logic
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // Initialize Data
+        populateDataTable();
+        populateSchema();
+    </script>
+</body>
+</html>

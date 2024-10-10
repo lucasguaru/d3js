@@ -111,6 +111,31 @@ function readCsvFileAsJson(buffer, linesToRead) {
     return json;
 }
 
+function getLineBreaker(allText) {
+    let pos = allText.indexOf('\n')
+    if (pos > -1 && allText.charAt(pos - 1) == '\r') {
+        return '\r\n'
+    } else {
+        return '\n'
+    }
+}
+
+function getFirstFieldSeparator(allText, separator, startPos) {
+    // Get first field separator
+    let commaSeparator = '"' + separator
+    let lineSeparator =  '"' + getLineBreaker(allText)
+    let posSeparatorComma = allText.indexOf(commaSeparator, startPos)
+    let posSeparatorLineBreak = allText.indexOf(lineSeparator, startPos)
+    if (posSeparatorComma > -1 && posSeparatorLineBreak > -1) {
+        let isFieldSeparatorComma = posSeparatorComma < posSeparatorLineBreak
+        let fieldSeparator = isFieldSeparatorComma ? commaSeparator : lineSeparator
+        return fieldSeparator
+        // return allText.substringBefore(fieldSeparator, startPos) // ,THOMASVILLE,"Old Dominion Freight Line, Inc.",NC,27360
+    }
+    log('MISSING IMPLEMENTATION - getFieldSeparator')
+    alert('MISSING IMPLEMENTATION - getFieldSeparator')
+}
+
 function readCSVValues(allText, separator, linesToRead) {
     let pos = 0
     let linePos = 0
@@ -120,6 +145,9 @@ function readCSVValues(allText, separator, linesToRead) {
     while (pos < allText.length) {
         let subtext = allText.substringBefore(separator, pos)
         if (isAllValue(subtext)) {
+            if (subtext.startsWith('"') && subtext.endsWith('"')) {
+                subtext = subtext.substring(1, subtext.length - 1)
+            }
             currentLine.push(subtext)
             pos += subtext.length + 1
         } else {
@@ -148,9 +176,14 @@ function readCSVValues(allText, separator, linesToRead) {
                     }
                     continue
                 } else {
-                    subtext = allText.substringBefore('"' + separator, pos + 1) // ,THOMASVILLE,"Old Dominion Freight Line, Inc.",NC,27360
+                    let fieldSeparator = getFirstFieldSeparator(allText, separator, pos + 1)
+                    subtext = allText.substringBefore(fieldSeparator, pos + 1) // ,THOMASVILLE,"Old Dominion Freight Line, Inc.",NC,27360
                     currentLine.push(subtext)
-                    pos += subtext.length + 3 // + 3 bc ("",). The subtext will have the clean value 'Old Dominion Freight Line, Inc.'
+                    pos += subtext.length + fieldSeparator.length + 1 // + 3 bc ("",). The subtext will have the clean value 'Old Dominion Freight Line, Inc.'
+                    
+                    if (linesToRead > 0 && linePos == linesToRead) return result
+                    currentLine = []
+                    result[++linePos] = currentLine
                 }
                 continue
             }
@@ -175,7 +208,7 @@ function readCSVValues(allText, separator, linesToRead) {
 
 function isAllValue(subtext) {
     if (subtext.includes(',')) return false
-    if (subtext.includes('"')) return false
+    if (subtext.includes('"') && subtext.includes('\n')) return false
     if (subtext.includes('\n')) return false
     return true
 }

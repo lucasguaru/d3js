@@ -64,7 +64,8 @@
         Drag and drop your .csv file here, or click to upload.
         <input type="file" id="file-input" style="display:none">
     </div>
-    <textarea id="textarea" placeholder="Enter the valid equipment_type, each one on a new line">V
+    <label for="equipmentList"></label>
+    <textarea id="equipmentList" placeholder="Enter the valid equipment_type, each one on a new line">V
 R
 PO
 SB
@@ -180,20 +181,61 @@ TA</textarea>
             }
         }
 
+		function trimJsonFields(json) {
+		    // Recursive function to traverse and trim strings in the object
+		    const traverseAndTrim = (obj) => {
+		        if (typeof obj === 'string') {
+		            // Trim the string
+		            return obj.trim();
+		        } else if (Array.isArray(obj)) {
+		            // If it's an array, recursively apply the function to each element
+		            return obj.map(traverseAndTrim);
+		        } else if (typeof obj === 'object' && obj !== null) {
+		            // If it's an object, recursively apply the function to each key
+		            for (let key in obj) {
+		                if (obj.hasOwnProperty(key)) {
+		                    obj[key] = traverseAndTrim(obj[key]);
+		                }
+		            }
+		        }
+		        return obj;
+		    }
+		
+		    return traverseAndTrim(json);
+		}
+
+		function getJsonLine(line) {
+			let newLine = line.substring(1, line.lastIndexOf('"'))
+			newLine = newLine.substring(0, newLine.length -2)
+			newLine = newLine.replace('\\o','~o')
+			newLine = newLine.replaceAll('","', ',')
+			
+			newLine = newLine.replaceAll('\\"""', '~')
+			newLine = newLine.replaceAll('"\\""', '~')
+			newLine = newLine.replaceAll('\\""', '~')
+			newLine = newLine.replaceAll('"', '')
+			
+			newLine = newLine.replaceAll('~', '"')
+			let json = null
+			try {
+				json = JSON.parse(newLine)
+			} catch (error) {
+				log('error', error)
+			}
+			return trimJsonFields(json)
+		}
+
         function processFile(content) {
             const lines = content.split('\n');
             lines.shift(); // Ignore the first line
             
             jsonData = lines
                 .filter(line => line.trim()) // Remove empty lines
-                .map(line => {
-                    debugger
-                    return JSON.parse(line.trim())
-                }); // Parse each line as JSON
+                .map((line, i) => getJsonLine(line.trim())); // Parse each line as JSON
         }
 
         validateButton.addEventListener('click', () => {
-            const textAreaContent = document.getElementById('textarea').value.trim().split('\n').map(item => item.trim());
+            const textAreaContent = document.getElementById('equipmentList').value.trim().split('\n').map(item => item.trim());
             const distinctEquipmentTypes = [...new Set(jsonData.map(item => item.equipment_type))];
 
             const invalidRows = [];
@@ -225,5 +267,43 @@ TA</textarea>
             }
         }
     </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 </html>
