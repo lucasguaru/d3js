@@ -145,11 +145,13 @@ function readCSVValues(allText, separator, linesToRead) {
     while (pos < allText.length) {
         let subtext = allText.substringBefore(separator, pos)
         if (isAllValue(subtext)) {
+            let additionalSize = 0
             if (subtext.startsWith('"') && subtext.endsWith('"')) {
+                additionalSize = 2
                 subtext = subtext.substring(1, subtext.length - 1)
             }
             currentLine.push(subtext)
-            pos += subtext.length + 1
+            pos += subtext.length + 1 + additionalSize
         } else {
             if (subtext && subtext[0] == '"') {
                 // check when it finishes the value
