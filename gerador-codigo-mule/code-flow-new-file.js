@@ -187,7 +187,7 @@ sizeOf(payload)]]]></os:value>
 	"started_date_time" : vars.batchStartedDateTime,
 }]]]></json-logger:content>
 		</json-logger:logger>
-		<batch:job jobName="${flow.kebabCase}Batch_Job" doc:id="${uuid()}" maxFailedRecords="\${batchJob.purchaseOrder.maxFailedRecords}" jobInstanceId='#[correlationId ++ "_" ++ uuid()]' blockSize="\${batchJob.purchaseOrder.batchBlockSize}" maxConcurrency="\${batchJob.purchaseOrder.maxConcurrency}" >
+		<batch:job jobName="${flow.kebabCase}Batch_Job" doc:id="${uuid()}" maxFailedRecords="\${batchJob.${flow.kebabCase}.maxFailedRecords}" jobInstanceId='#[correlationId ++ "_" ++ uuid()]' blockSize="\${batchJob.${flow.kebabCase}.batchBlockSize}" maxConcurrency="\${batchJob.${flow.kebabCase}.maxConcurrency}" >
 			<batch:process-records >
 				<batch:step name="Batch_Step" doc:id="${uuid()}" >
 					<try doc:name="Try ${flow.name} Batch" doc:id="${uuid()}" >
@@ -198,7 +198,7 @@ sizeOf(payload)]]]></os:value>
 							</on-error-propagate>
 						</error-handler>
 					</try>
-					<batch:aggregator doc:name="${flow.name} Batch Aggregator" doc:id="${uuid()}" size="\${batchJob.purchaseOrder.batchBlockSize}" >
+					<batch:aggregator doc:name="${flow.name} Batch Aggregator" doc:id="${uuid()}" size="\${batchJob.${flow.kebabCase}.batchBlockSize}" >
 						<flow-ref doc:name="Update Processed Records Count" doc:id="${uuid()}" name="batch-aggregator-sub-flow" />
 					</batch:aggregator>
 				</batch:step>

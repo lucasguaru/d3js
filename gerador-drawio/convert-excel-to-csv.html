@@ -53,19 +53,22 @@
     });
 
     fileInput.addEventListener('change', (e) => {
-      handleFile(e.target.files[0]);
+      uploadArea.innerText = "Converting..."
+      handleFile(e.target.files[0], () => {
+        uploadArea.innerText = "Drag & Drop or Click to Upload File"
+      });
     });
 
-    function handleFile(file) {
+    function handleFile(file, fnCallback) {
       if (file) {
         const fileName = file.name;
         const extension = fileName.split('.').pop().toLowerCase();
         const baseName = fileName.substring(0, fileName.lastIndexOf('.'));
 
         if (extension === 'xlsx') {
-          processExcelFile(file, baseName);
+          processExcelFile(file, baseName, fnCallback);
         } else if (extension === 'csv') {
-          processCSVFile(file, baseName);
+          processCSVFile(file, baseName, fnCallback);
         } else {
           alert('Please upload a .xlsx or .csv file.');
         }
@@ -73,7 +76,7 @@
     }
 
     // Process Excel file and convert to CSV
-    function processExcelFile(file, baseName) {
+    function processExcelFile(file, baseName, fnCallback) {
       const reader = new FileReader();
       reader.onload = function (e) {
         const data = new Uint8Array(e.target.result);
@@ -84,17 +87,19 @@
         });
         const convertedData = convertDatesToISO(csvData);
         downloadCSV(convertedData, baseName + '.csv');
+        fnCallback()
       };
       reader.readAsArrayBuffer(file);
     }
 
     // Process CSV file and convert dates
-    function processCSVFile(file, baseName) {
+    function processCSVFile(file, baseName, fnCallback) {
       const reader = new FileReader();
       reader.onload = function (e) {
         const csvData = e.target.result;
         const convertedData = convertDatesToISO(csvData);
         downloadCSV(convertedData, baseName + '.csv');
+        fnCallback()
       };
       reader.readAsText(file);
     }
